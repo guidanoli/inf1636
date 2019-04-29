@@ -1,2 +1,1 @@
-# projetopoo
-Projeto de Programação Orientada a Objetos (INF1636)
+# Projeto de Programação Orientada a Objetos (INF1636)
