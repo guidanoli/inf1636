@@ -3,6 +3,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.*;
 
+@SuppressWarnings("serial")
 public class MainPanel extends JPanel {
 	
 	public static final int text_x = 0;
@@ -16,8 +17,12 @@ public class MainPanel extends JPanel {
 	public void paintComponent(Graphics g)
 	{
 		super.paintComponent(g);
+		// set text color
+		g.setColor(Color.BLUE);
 		g.drawString("Minha string", text_x, text_y);
 		Graphics2D g2d = (Graphics2D) g;
+		// set drawings color
+		g2d.setColor(Color.RED);
 		// draws a rectangle
 		double leftX=100.0;
 		double topY=100.0;
