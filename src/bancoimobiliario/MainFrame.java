@@ -34,7 +34,7 @@ public class MainFrame extends JFrame {
 		getContentPane().add(p);
 		// set look and feel
 		try {
-			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+			UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
 		}
 		catch (ClassNotFoundException e)
 		{
