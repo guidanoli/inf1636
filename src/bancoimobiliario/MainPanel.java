@@ -21,24 +21,26 @@ public class MainPanel extends JPanel {
 		g.setColor(Color.BLUE);
 		g.drawString("Minha string", text_x, text_y);
 		Graphics2D g2d = (Graphics2D) g;
-		// set drawings color
-		g2d.setColor(Color.RED);
 		// draws a rectangle
+		g2d.setColor(Color.RED);
 		double leftX=100.0;
 		double topY=100.0;
 		double larg=200.0;
 		double alt=150.0;
 		Rectangle2D rt=new Rectangle2D.Double(leftX,topY,larg,alt);
-		g2d.draw(rt);
+		g2d.fill(rt);
 		// draws an ellipsis inside the rectangle
+		g2d.setColor(Color.YELLOW);
 		Ellipse2D e=new Ellipse2D.Double();
 		e.setFrame(rt);
-		g2d.draw(e);
+		g2d.fill(e);
 		// draws the rectangle's diagonal
+		g2d.setColor(Color.BLACK);
 		Point2D p1=new Point2D.Double(leftX,topY);
 		Point2D p2=new Point2D.Double(leftX+larg,topY+alt);
 		g2d.draw(new Line2D.Double(p1,p2));
 		// draws a centered circle
+		g2d.setColor(Color.GREEN);
 		double cX=rt.getCenterX();
 		double cY=rt.getCenterY();
 		double raio=150.0;
