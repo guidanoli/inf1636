@@ -63,6 +63,7 @@ public class MainFrame extends JFrame {
 			p.add(t);
 		}
 		lst.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		lst.addListSelectionListener(new MeuListListener());
 		p.add(lst);
 		JRadioButton rnd_select = tgl_array.get(new Random().nextInt(tgl_array.size()));
 		rnd_select.setSelected(true);
