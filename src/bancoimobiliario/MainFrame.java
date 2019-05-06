@@ -33,7 +33,7 @@ public class MainFrame extends JFrame {
 	}
 
 	public static void main(String[] args) {
-		MainFrame painel = new MainFrame("Banco Imobiliário");
+		MainFrame painel = new MainFrame("Doge");
 		painel.setVisible(true);
 		//code
 	}
