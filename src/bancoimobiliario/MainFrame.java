@@ -2,6 +2,7 @@ package bancoimobiliario;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Random;
 
 @SuppressWarnings("serial")
 public class MainFrame extends JFrame {
@@ -15,7 +16,9 @@ public class MainFrame extends JFrame {
 	
 	// components
 	ArrayList<JButton> btn_array = new ArrayList<JButton>();
-	String button_lbls[] = {"wow","such","buttons","very","swing"};
+	String button_lbls[] = {"wow","such","buttons","very","java"};
+	ArrayList<JRadioButton> tgl_array = new ArrayList<JRadioButton>();
+	String tgl_lbls[] = {"smol","cute","fluf"};
 	
 	public MainFrame(String name) {
 		// set frame name
@@ -39,6 +42,15 @@ public class MainFrame extends JFrame {
 			b.setToolTipText(b.getText()+"!");
 			p.add(b);
 		}
+		for( String lbl : tgl_lbls )
+		{
+			JRadioButton t = new JRadioButton(lbl);
+			tgl_array.add(t);
+			t.setToolTipText(t.getText()+" is an option.");
+			p.add(t);
+		}
+		JRadioButton rnd_select = tgl_array.get(new Random().nextInt(tgl_array.size()));
+		rnd_select.setSelected(true);
 		p.setBackground(Color.WHITE);
 		getContentPane().add(p);
 		// set look and feel
