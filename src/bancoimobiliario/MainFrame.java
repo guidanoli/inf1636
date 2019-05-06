@@ -17,13 +17,6 @@ public class MainFrame extends JFrame {
 	// components
 	ArrayList<JButton> btn_array = new ArrayList<JButton>();
 	String button_lbls[] = {"wow","such","buttons","very","java"};
-	ButtonGroup button_group = new ButtonGroup();
-	ArrayList<JRadioButton> tgl_array = new ArrayList<JRadioButton>();
-	String tgl_lbls[] = {"male","female","neither","both"};
-	ArrayList<JCheckBox> cb_array = new ArrayList<JCheckBox>();
-	String cb_lbls[] = {"smol","cute","fluf"};
-	String lst_items_lbls[] = {"black","cream","white"};
-	JList<String> lst = new JList<String>(lst_items_lbls);
 	
 	public MainFrame(String name) {
 		// set frame name
@@ -39,34 +32,15 @@ public class MainFrame extends JFrame {
 		// exit on close
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		// set panel layout
-		p.setLayout(new BoxLayout(p,BoxLayout.Y_AXIS));
+		p.setLayout(new FlowLayout());
 		for( String lbl : button_lbls )
 		{
 			JButton b = new JButton(lbl);
+			b.addMouseListener( new MyMouseListener(b) );
 			btn_array.add(b);
 			b.setToolTipText(b.getText()+"!");
 			p.add(b);
 		}
-		for( String lbl : tgl_lbls )
-		{
-			JRadioButton t = new JRadioButton(lbl);
-			tgl_array.add(t);
-			button_group.add(t);
-			t.setToolTipText(t.getText()+" is an option.");
-			p.add(t);
-		}
-		for( String lbl : cb_lbls )
-		{
-			JCheckBox t = new JCheckBox(lbl,false);
-			cb_array.add(t);
-			t.setToolTipText(t.getText()+" is a characteristic.");
-			p.add(t);
-		}
-		lst.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		lst.addListSelectionListener(new MeuListListener());
-		p.add(lst);
-		JRadioButton rnd_select = tgl_array.get(new Random().nextInt(tgl_array.size()));
-		rnd_select.setSelected(true);
 		p.setBackground(Color.WHITE);
 		getContentPane().add(p);
 		// set look and feel
