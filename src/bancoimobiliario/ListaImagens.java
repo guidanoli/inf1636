@@ -15,7 +15,7 @@ public class ListaImagens {
 	Image novaImagem(String path) {
 		Image i;
 		try {
-			i=ImageIO.read(new File("sprites/img.png"));
+			i=ImageIO.read(new File(path));
 			if( tam < max_tam )
 			{
 				v[tam]=i;

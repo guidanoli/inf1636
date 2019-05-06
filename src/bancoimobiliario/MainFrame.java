@@ -2,7 +2,6 @@ package bancoimobiliario;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Random;
 
 @SuppressWarnings("serial")
 public class MainFrame extends JFrame {
@@ -33,6 +32,7 @@ public class MainFrame extends JFrame {
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		// set panel layout
 		p.setLayout(new FlowLayout());
+		// set up buttons, listeners and add them to the buttons array
 		for( String lbl : button_lbls )
 		{
 			JButton b = new JButton(lbl);
@@ -41,7 +41,9 @@ public class MainFrame extends JFrame {
 			b.setToolTipText(b.getText()+"!");
 			p.add(b);
 		}
+		// set bg color as WHITE
 		p.setBackground(Color.WHITE);
+		// add main panel to content pane
 		getContentPane().add(p);
 		// set look and feel
 		try {

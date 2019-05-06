@@ -14,8 +14,8 @@ public class MainPanel extends JPanel {
 	{
 		super.paintComponent(g);
 		ListaImagens l = new ListaImagens();
-		Image i = l.novaImagem("sprites/img.png");
-		g.drawImage(i, 0, 0, 400, 400, 0, 0, i.getWidth(null), i.getHeight(null), null);
+		Image bgimg = l.novaImagem("sprites/img.png"); // background image
+		g.drawImage(bgimg, 0, 0, 400, 400, 0, 0, bgimg.getWidth(null), bgimg.getHeight(null), null);
 	}
 	
 }
