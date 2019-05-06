@@ -46,7 +46,7 @@ public class MyMouseListener implements MouseListener {
 	
 	private boolean isInsideButton( int x , int y ) {
 		int bw = b.getWidth(), bh = b.getHeight();
-		return !(x >= bw && y >= bh); 
+		return x <= bw && y <= bh; 
 	}
 
 }
