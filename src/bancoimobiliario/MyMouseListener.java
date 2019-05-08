@@ -3,21 +3,15 @@ import java.awt.event.*;
 import javax.swing.*;
 
 public class MyMouseListener implements MouseListener {
-
-	private JButton b;
 	
-	public MyMouseListener( JButton button ) {
+	public MyMouseListener() {
 		// TODO Auto-generated constructor stub
-		b = button;
 	}
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		// TODO Auto-generated method stub
-		if( isInsideButton(e.getX(),e.getY()) )
-		{
-			System.out.println("Clicked inside button '"+b.getText()+"'.");
-		}
+		JOptionPane.showMessageDialog(null, String.format("x = %d y = %d", e.getX(), e.getY()));
 	}
 
 	@Override
@@ -44,9 +38,4 @@ public class MyMouseListener implements MouseListener {
 		
 	}
 	
-	private boolean isInsideButton( int x , int y ) {
-		int bw = b.getWidth(), bh = b.getHeight();
-		return x <= bw && y <= bh; 
-	}
-
 }
