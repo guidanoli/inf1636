@@ -5,17 +5,28 @@ import java.awt.*;
 @SuppressWarnings("serial")
 public class MainPanel extends JPanel {
 	
-	public MainPanel()
+	// frame
+	MainFrame frame;
+	
+	// image list
+	private ListaImagens l = new ListaImagens();
+	
+	// images
+	private Image bgimg;
+	
+	public MainPanel(MainFrame frame)
 	{
 		super();
+		this.frame = frame;
+		bgimg = l.novaImagem("sprites/BI.jpg"); // background image
 	}
 	
 	public void paintComponent(Graphics g)
 	{
 		super.paintComponent(g);
-		ListaImagens l = new ListaImagens();
-		Image bgimg = l.novaImagem("sprites/img.png"); // background image
-		g.drawImage(bgimg, 0, 0, 400, 400, 0, 0, bgimg.getWidth(null), bgimg.getHeight(null), null);
+		int DEF_W = frame.getWidth();
+		int DEF_H = frame.getHeight() - frame.H_INC;
+		g.drawImage(bgimg, 0, 0, DEF_W, DEF_H, 0, 0, bgimg.getWidth(null), bgimg.getHeight(null), null);
 	}
 	
 }

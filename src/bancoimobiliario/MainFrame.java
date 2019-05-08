@@ -1,21 +1,20 @@
 package bancoimobiliario;
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
 
 @SuppressWarnings("serial")
 public class MainFrame extends JFrame {
 
 	// size parameters
-	public final int DEF_H = 400;
-	public final int DEF_W = 400;
+	public final int DEF_H = 800;
+	public final int DEF_W = 800;
+	public final int H_INC = 27;
+	public final int W_INC = 0;
 	
 	// containers
-	JPanel p = new MainPanel();
+	JPanel p = new MainPanel(this);
 	
 	// components
-	ArrayList<JButton> btn_array = new ArrayList<JButton>();
-	String button_lbls[] = {"wow","such","buttons","very","java"};
 	
 	public MainFrame(String name) {
 		// set frame name
@@ -27,20 +26,11 @@ public class MainFrame extends JFrame {
 		int s_h = d.height;
 		int x = (s_w - DEF_W)/2;
 		int y = (s_h - DEF_H)/2;
-		setBounds(x,y,DEF_W,DEF_H);
+		setBounds(x,y,DEF_W + W_INC,DEF_H + H_INC);
 		// exit on close
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		// set panel layout
 		p.setLayout(new FlowLayout());
-		// set up buttons, listeners and add them to the buttons array
-		for( String lbl : button_lbls )
-		{
-			JButton b = new JButton(lbl);
-			b.addMouseListener( new MyMouseListener(b) );
-			btn_array.add(b);
-			b.setToolTipText(b.getText()+"!");
-			p.add(b);
-		}
 		// set bg color as WHITE
 		p.setBackground(Color.WHITE);
 		// add main panel to content pane
