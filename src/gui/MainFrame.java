@@ -21,7 +21,6 @@ public class MainFrame extends JFrame {
 	public MainFrame(String name) {
 		super(name);
 		setFrameSizeAndPos();
-		setWindowsLookAndFeel();
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		getContentPane().add(p);
 		setResizable(false);
@@ -34,13 +33,6 @@ public class MainFrame extends JFrame {
 		int x = (d.width - DEF_W - W_INC)/2;
 		int y = (d.height - DEF_H - H_INC)/2;
 		setBounds(x, y, DEF_W + W_INC, DEF_H + H_INC);
-	}
-	
-	private void setWindowsLookAndFeel() {
-		try {
-			UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel"); }
-		catch (Exception e) {
-			System.out.println(e.getMessage()); }
 	}
 	
 	public static void main(String[] args) {

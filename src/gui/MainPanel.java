@@ -6,7 +6,6 @@ import img.ImgList;
 
 import java.awt.*;
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -19,6 +18,9 @@ public class MainPanel extends JPanel {
 	// frame
 	MainFrame frame;
 	
+	// components
+	JLabel toast = new JLabel("toast");
+	
 	// logic
 	Logic logic = new Logic(this);
 	
@@ -27,6 +29,14 @@ public class MainPanel extends JPanel {
 	
 	// images
 	private Image bgimg;
+	private Image dice;
+	
+	// images borders
+	private Rectangle dice_ret = new Rectangle(220, 650, 100, 100);
+	private Rectangle bgimg_ret = new Rectangle(1000,1000);
+	
+	// listener
+	private PanelMouseListener listener = new PanelMouseListener();
 	
 	public MainPanel(MainFrame frame)
 	{
@@ -35,15 +45,53 @@ public class MainPanel extends JPanel {
 		l = new ImgList();
 		loadSprites("sprites");
 		bgimg = l.getImg("sprites_tabuleiroRJ");
-		addMouseListener(new MyMouseListener());
-		setLayout(new FlowLayout());
+		dice = l.getImg(String.format("sprites_dados_die_face_%d",logic.getLastRoll()));
+		addMouseListener(listener);
 		setBackground(Color.WHITE);
+		setObjectListeners();
+		repaint();
+	}
+	
+	public void setObjectListeners()
+	{
+		listener.addArea(dice_ret, new ObjectClickListener() {
+			public void action() {
+				logic.roll();
+				dice = l.getImg(String.format("sprites_dados_die_face_%d",logic.getLastRoll()));
+				repaint();
+			}
+		});
 	}
 	
 	public void paintComponent(Graphics g)
 	{
 		super.paintComponent(g);
-		g.drawImage(bgimg, 0, 0, this.getWidth(), this.getHeight(), 0, 0, bgimg.getWidth(null), bgimg.getHeight(null), null);
+		paintBoard(g);
+		paintToast(g);
+		paintDice(g);
+	}
+	
+	private void paintGameImage(Graphics g, Image i, Rectangle r)
+	{
+		g.drawImage(i, r.x, r.y, r.width+r.x, r.height+r.y,
+					0, 0, i.getWidth(this), i.getHeight(this), this);
+	}
+	
+	private void paintDice(Graphics g)
+	{
+		paintGameImage(g,dice,dice_ret);
+	}
+		
+	private void paintToast(Graphics g)
+	{
+		g.setFont(new Font("Verdana", Font.BOLD, 24));
+		g.setColor(Color.RED);
+		g.drawString("ALGO DO TIPO SUA VEZ", 145, 845);
+	}
+	
+	private void paintBoard(Graphics g)
+	{
+		paintGameImage(g,bgimg,bgimg_ret);
 	}
 	
 	private void loadSprites(String spritesDir)
