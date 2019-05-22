@@ -1,14 +1,26 @@
-package bancoimobiliario;
+package gui;
 import javax.swing.*;
+
+import game.Logic;
+import img.ImgList;
+
 import java.awt.*;
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.stream.Stream;
 
 @SuppressWarnings("serial")
 public class MainPanel extends JPanel {
 	
 	// frame
 	MainFrame frame;
+	
+	// logic
+	Logic logic = new Logic(this);
 	
 	// image list
 	private ImgList l;
@@ -46,11 +58,27 @@ public class MainPanel extends JPanel {
 				return false;
 			}
 		};
-		for( File f : dir.listFiles(spriteFileFilter) )
-		{
-			System.out.printf("Image '%s' added.",f.getPath());
-			l.addImg(f.getPath());
-		}
+//		for( File f : dir.listFiles(spriteFileFilter) )
+//		{
+//			System.out.printf("Image '%s' added.",f.getPath());
+//			l.addImg(f.getPath());
+//		}
+		
+		try (Stream<Path> paths = Files.walk(Paths.get(dir.getPath()))) {
+			paths
+				.filter(Files::isRegularFile)
+				.forEach(this::addImgThroughPath);
+		} catch (IOException e) { System.out.println(e.getMessage()); }
+	}
+	
+	private void addImgThroughPath(Path path) {
+		l.addImg(path.toString());
+		System.out.printf("Image '%s' added.\n",path.toString());
+	}
+	
+	public void rollDice()
+	{
+		
 	}
 	
 }

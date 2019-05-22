@@ -1,4 +1,4 @@
-package bancoimobiliario;
+package img;
 import java.awt.*;
 import java.io.*;
 import java.util.HashMap;
