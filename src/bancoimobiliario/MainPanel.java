@@ -18,7 +18,7 @@ public class MainPanel extends JPanel {
 	{
 		super();
 		this.frame = frame;
-		bgimg = l.novaImagem("sprites/BI.jpg");
+		bgimg = l.novaImagem("sprites/tabuleiroRJ.jpg");
 		addMouseListener(new MyMouseListener());
 		setLayout(new FlowLayout());
 		setBackground(Color.WHITE);
@@ -27,9 +27,7 @@ public class MainPanel extends JPanel {
 	public void paintComponent(Graphics g)
 	{
 		super.paintComponent(g);
-		int DEF_W = frame.getWidth() - frame.W_INC;
-		int DEF_H = frame.getHeight() - frame.H_INC;
-		g.drawImage(bgimg, 0, 0, DEF_W, DEF_H, 0, 0, bgimg.getWidth(null), bgimg.getHeight(null), null);
+		g.drawImage(bgimg, 0, 0, this.getWidth(), this.getHeight(), 0, 0, bgimg.getWidth(null), bgimg.getHeight(null), null);
 	}
 	
 }
