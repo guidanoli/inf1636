@@ -16,19 +16,24 @@ public class MainFrame extends JFrame {
 	JPanel p = new MainPanel(this);
 	
 	// components
+	// none yet --
 	
 	public MainFrame(String name) {
 		super(name);
-		Toolkit tk = Toolkit.getDefaultToolkit();
-		Dimension d = tk.getScreenSize();
-		int x = (d.width - DEF_W - W_INC)/2;
-		int y = (d.height - DEF_H - H_INC)/2;
-		setBounds(x, y, DEF_W + W_INC, DEF_H + H_INC);
+		setFrameSizeAndPos();
 		setWindowsLookAndFeel();
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		getContentPane().add(p);
 		setResizable(false);
 		setVisible(true);
+	}
+	
+	private void setFrameSizeAndPos() {
+		Toolkit tk = Toolkit.getDefaultToolkit();
+		Dimension d = tk.getScreenSize();
+		int x = (d.width - DEF_W - W_INC)/2;
+		int y = (d.height - DEF_H - H_INC)/2;
+		setBounds(x, y, DEF_W + W_INC, DEF_H + H_INC);
 	}
 	
 	private void setWindowsLookAndFeel() {

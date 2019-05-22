@@ -9,7 +9,7 @@ public class MainPanel extends JPanel {
 	MainFrame frame;
 	
 	// image list
-	private ListaImagens l = new ListaImagens();
+	private ImgList l;
 	
 	// images
 	private Image bgimg;
@@ -18,7 +18,12 @@ public class MainPanel extends JPanel {
 	{
 		super();
 		this.frame = frame;
-		bgimg = l.novaImagem("sprites/tabuleiroRJ.jpg");
+		try {
+			l = new ImgList(100);
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+		bgimg = l.addImg("sprites/tabuleiroRJ.jpg");
 		addMouseListener(new MyMouseListener());
 		setLayout(new FlowLayout());
 		setBackground(Color.WHITE);
