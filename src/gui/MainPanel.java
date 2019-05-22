@@ -49,24 +49,9 @@ public class MainPanel extends JPanel {
 	private void loadSprites(String spritesDir)
 	{
 		File dir = new File(spritesDir);
-		String [] extensions = {"jpg","png"};
-		FilenameFilter spriteFileFilter = new FilenameFilter() {
-			public boolean accept(File dir, String name) {
-				for( final String ext : extensions )
-					if( name.endsWith("."+ext) )
-						return true;
-				return false;
-			}
-		};
-//		for( File f : dir.listFiles(spriteFileFilter) )
-//		{
-//			System.out.printf("Image '%s' added.",f.getPath());
-//			l.addImg(f.getPath());
-//		}
-		
 		try (Stream<Path> paths = Files.walk(Paths.get(dir.getPath()))) {
 			paths
-				.filter(Files::isRegularFile)
+				.filter(f -> Files.isRegularFile(f) && accept(f.toString()))
 				.forEach(this::addImgThroughPath);
 		} catch (IOException e) { System.out.println(e.getMessage()); }
 	}
@@ -74,6 +59,14 @@ public class MainPanel extends JPanel {
 	private void addImgThroughPath(Path path) {
 		l.addImg(path.toString());
 		System.out.printf("Image '%s' added.\n",path.toString());
+	}
+	
+	private boolean accept(String name) {
+		String [] extensions = {"jpg","png"};
+		for( final String ext : extensions )
+			if( name.endsWith("."+ext) )
+				return true;
+		return false;
 	}
 	
 	public void rollDice()
