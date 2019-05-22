@@ -1,36 +1,31 @@
 package bancoimobiliario;
 import java.awt.*;
 import java.io.*;
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.imageio.*;
 
 public class ImgList {
-	private Image [] v;
-	private int count = 0;
-	private int max;
+	protected Map<String,Image> imglist;
 	
-	public ImgList(int maxSize) throws Exception {
-		if( maxSize <= 0 )
-		{
-			throw new Exception("Lista de imagens deve ter tamanho positivo.");
-		}
-		max = maxSize;
-		v = new Image[max];
+	/* Initialize a list without cap */
+	public ImgList() {
+		imglist = new HashMap<String,Image>();
 	}
 	
-	Image addImg(String path) {
-		Image i;
+	/* Add image to image list through its path */
+	public Image addImg(String path) {
+		/* Does not let overwrite unnecessarly */
+		if( imglist.containsKey(path) )
+		{
+			System.out.printf("Image '%s' already loaded!",path);
+			return imglist.get(path);
+		}
 		try {
-			i=ImageIO.read(new File(path));
-			if( count < max )
-			{
-				v[count]=i;
-				count++;
-				return i;
-			}
-			else
-			{
-				return null;
-			}
+			Image i = ImageIO.read(new File(path));
+			imglist.put(path, i);
+			return i;
 		}
 		catch(IOException e) {
 			System.out.println(e.getMessage());
@@ -39,6 +34,16 @@ public class ImgList {
 		}
 	}
 	
-	int getImgCount() { return count; }
-	Image [] getImg() { return v; }
+	/* Get image count */
+	public int getImgCount() {
+		return imglist.size();
+	}
+	
+	/* Get image object from its path */
+	public Image getImg(String path) {
+		Image i = imglist.get(path);
+		if( i == null )
+			System.out.printf("Image '%s' not found!",path);
+		return i;
+	}
 }

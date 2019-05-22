@@ -18,11 +18,7 @@ public class MainPanel extends JPanel {
 	{
 		super();
 		this.frame = frame;
-		try {
-			l = new ImgList(100);
-		} catch (Exception e) {
-			System.out.println(e.getMessage());
-		}
+		l = new ImgList();
 		bgimg = l.addImg("sprites/tabuleiroRJ.jpg");
 		addMouseListener(new MyMouseListener());
 		setLayout(new FlowLayout());
