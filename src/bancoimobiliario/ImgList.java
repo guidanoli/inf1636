@@ -16,15 +16,16 @@ public class ImgList {
 	
 	/* Add image to image list through its path */
 	public Image addImg(String path) {
-		/* Does not let overwrite unnecessarly */
-		if( imglist.containsKey(path) )
+		/* Does not let overwrite Image objects of same path unnecessarily */
+		String formattedPath = formatPath(path);
+		if( imglist.containsKey(formattedPath) )
 		{
 			System.out.printf("Image '%s' already loaded!",path);
-			return imglist.get(path);
+			return imglist.get(formattedPath);
 		}
 		try {
 			Image i = ImageIO.read(new File(path));
-			imglist.put(path, i);
+			imglist.put(formattedPath, i);
 			return i;
 		}
 		catch(IOException e) {
@@ -41,9 +42,16 @@ public class ImgList {
 	
 	/* Get image object from its path */
 	public Image getImg(String path) {
-		Image i = imglist.get(path);
+		Image i = imglist.get(formatPath(path));
 		if( i == null )
 			System.out.printf("Image '%s' not found!",path);
 		return i;
 	}
+	
+	private String formatPath(String path) {
+		path = path.replaceAll("\\..*", ""); /* remove extensions */
+		path = path.replaceAll("\\\\|/", "_"); /* even file separators */
+		return path;
+	}
+	
 }
