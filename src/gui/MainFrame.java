@@ -1,5 +1,9 @@
 package gui;
 import javax.swing.*;
+
+import game.Logic;
+import game.Player;
+
 import java.awt.*;
 
 @SuppressWarnings("serial")
@@ -13,11 +17,13 @@ public class MainFrame extends JFrame {
 	//public final int W_INC = 16; -- if resizable = true
 	
 	// containers
-	JPanel p = new MainPanel(this);
-	
+	// containers
+	Logic l = new Logic();
+	Player player= this.l.addPlayer();
+	JPanel p = new MainPanel(this, l);
+		
 	// components
-	// none yet --
-	
+	// none yet --		
 	public MainFrame(String name) {
 		super(name);
 		setFrameSizeAndPos();
@@ -30,7 +36,7 @@ public class MainFrame extends JFrame {
 	private void setFrameSizeAndPos() {
 		Toolkit tk = Toolkit.getDefaultToolkit();
 		Dimension d = tk.getScreenSize();
-		int x = (d.width - DEF_W - W_INC)/2;
+			int x = (d.width - DEF_W - W_INC)/2;
 		int y = (d.height - DEF_H - H_INC)/2;
 		setBounds(x, y, DEF_W + W_INC, DEF_H + H_INC);
 	}
@@ -38,5 +44,4 @@ public class MainFrame extends JFrame {
 	public static void main(String[] args) {
 		new MainFrame("Banco Imobiliário");
 	}
-	
 }
