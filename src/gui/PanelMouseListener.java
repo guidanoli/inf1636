@@ -5,8 +5,8 @@ import java.util.ArrayList;
 
 public class PanelMouseListener extends MouseAdapter {
 	ArrayList<Rectangle> areas = new ArrayList<Rectangle>();
-	ArrayList<ObjectClickListener> listeners = new ArrayList<ObjectClickListener>();
-	public void addArea( Rectangle area , ObjectClickListener listener ) {
+	ArrayList<AreaMouseListener> listeners = new ArrayList<AreaMouseListener>();
+	public void addArea( Rectangle area , AreaMouseListener listener ) {
 		areas.add(area);
 		listeners.add(listener);
 	}

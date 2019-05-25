@@ -1,5 +1,5 @@
 package gui;
 
-public interface ObjectClickListener {
+public interface AreaMouseListener {
 	public void action();
 }
