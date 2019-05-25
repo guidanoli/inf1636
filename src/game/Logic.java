@@ -34,21 +34,20 @@ public class Logic {
 		int oldPos = players.get(turno).getPos();
 		int newPos = (oldPos + getLastRoll())%37;
 		players.get(turno).setPos( newPos );
+		nextTurn();
 	}
 	
 	public int getLastRoll() {
 		return dice.getLastRoll();
 	}
 	
-	public Player addPlayer() {
+	public void addPlayer() {
 		int addedPlayerId;
 		if( this.getNumPlayers() > 5 ) {
 			System.out.println("Impossível adicionar mais jogadores");
-			return null;
 		} else {
 			addedPlayerId = this.getNumPlayers() + 1;
 			this.players.add( new Player( addedPlayerId) );
-			return players.get(addedPlayerId - 1);
 		}
 	}
 	
@@ -67,5 +66,12 @@ public class Logic {
 	public int getNumPlayers() {
 		return this.players.size();
 	}
-
+	public void nextTurn() {
+		int numTurnos = getNumPlayers();
+		if( this.turno == numTurnos - 1 ) {
+			this.turno = 0;
+		} else {
+			this.turno++;
+		}
+	}
 }
