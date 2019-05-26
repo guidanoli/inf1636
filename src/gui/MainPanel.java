@@ -18,34 +18,33 @@ import java.util.stream.Stream;
 @SuppressWarnings("serial")
 public class MainPanel extends JPanel {
 	
+	/* *********
+	 * VARIABLES
+	 * ********* */
+	
 	// frame
 	MainFrame frame;
-	
-	// components
-	JLabel toast = new JLabel("toast");
-	
+		
 	// logic
 	Logic logic;
+
+	// listener
+	private PanelMouseListener listener = new PanelMouseListener();
 	
-	// image list
+	// graphical components
 	private ImgList l;
-	
-	// images
 	private Image bgimg;
 	private Image dice;
 	private ArrayList<Image> playersimg = new ArrayList<Image>();
-		
-	// board cell measures
-	private final int longMeasure = 121;
-	private final int shortMeasure = 94;
-	private final int numOfCells = 36;
-	
+
 	// images borders
 	private Rectangle dice_ret = new Rectangle(220, 650, 100, 100);
 	private Rectangle bgimg_ret = new Rectangle(1000,1000);
 	
-	// listener
-	private PanelMouseListener listener = new PanelMouseListener();
+	// board measures
+	private final int longMeasure = 121;
+	private final int shortMeasure = 94;
+	private final int numOfCells = 36;
 	
 	public MainPanel( MainFrame frame, int numOfPlayers )
 	{
@@ -53,21 +52,21 @@ public class MainPanel extends JPanel {
 		logic = new Logic(numOfPlayers);
 		this.frame = frame;
 		l = new ImgList();
-		loadSprites("sprites");
-		bgimg = l.getImg("sprites_tabuleiroRJ");
-		dice = l.getImg(String.format("sprites_dados_die_face_%d",this.logic.getLastRoll()));
-		for( int pId = 0; pId < this.logic.getNumPlayers(); pId++ ) {
-			playersimg.add(l.getImg(String.format("sprites_pinos_pin%d", pId)));
-		}
 		addMouseListener(listener);
 		setBackground(Color.WHITE);
-		setObjectListeners();
+		loadSprites("sprites");
+		storeSprites();
+		setAreaListeners();
 		repaint();
 	}
 	
-	public void setObjectListeners()
+	/* **************
+	 * AREA LISTENERS
+	 * ************** */
+	
+	public void setAreaListeners()
 	{
-		listener.addArea(dice_ret, new ObjectClickListener() {
+		listener.addArea(dice_ret, new AreaMouseListener() {
 			public void action() {
 				logic.roll();
 				dice = l.getImg(String.format("sprites_dados_die_face_%d",logic.getLastRoll()));
@@ -75,6 +74,10 @@ public class MainPanel extends JPanel {
 			}
 		});
 	}
+	
+	/* ******************
+	 * PAINTING FUNCTIONS
+	 * ****************** */
 	
 	public void paintComponent(Graphics g)
 	{
@@ -100,7 +103,6 @@ public class MainPanel extends JPanel {
 	{
 		int pId = 0;
 		for( Integer pos : logic.getPlayersPos()) {
-//			Rectangle rect = posAsSquare(pos, pId);
 			Rectangle rect = getPlayerRect(pos, pId);
 			Image i = playersimg.get(pId);
 			paintGameImage(g, i , rect);
@@ -118,6 +120,18 @@ public class MainPanel extends JPanel {
 	private void paintBoard(Graphics g)
 	{
 		paintGameImage(g,bgimg,bgimg_ret);
+	}
+	
+	/* ***************
+	 * SPRITES LOADING
+	 * *************** */
+	
+	private void storeSprites()
+	{
+		bgimg = l.getImg("sprites_tabuleiroRJ");
+		dice = l.getImg(String.format("sprites_dados_die_face_%d",this.logic.getLastRoll()));
+		for( int pId = 0; pId < this.logic.getNumPlayers(); pId++ )
+			playersimg.add(l.getImg(String.format("sprites_pinos_pin%d", pId)));
 	}
 	
 	private void loadSprites(String spritesDir)
@@ -142,6 +156,10 @@ public class MainPanel extends JPanel {
 				return true;
 		return false;
 	}
+	
+	/* ****************************
+	 * BOARD HOUSE POSITION MAPPING
+	 * **************************** */
 	
 	private Rectangle getPlayerRect(int pos, int pId) {
 		Rectangle cellOffset = getCellOffset(pos);
@@ -204,30 +222,6 @@ public class MainPanel extends JPanel {
 			return new Rectangle(shortMeasure,longMeasure); /* upper & lower */
 	}
 	
-	private Rectangle posAsSquare(int pos, int pId) {
-		Rectangle rect =  new Rectangle();
-		int coeficiente = 10;
-		if( pId > 3) pId = pId -3;
-		if(  0 <= pos && pos <= 9 ) { // left houses
-			rect.setBounds( 15 + pId*coeficiente , 880 - pos*92, 20, 30 );
-		} else if(  10 <= pos && pos <= 18 ) { // upper houses
-			pos = pos-10;
-			rect.setBounds( 140 + pos*92 , 45, 20, 30);
-		} else if(  19 <= pos && pos <= 28 ) { // right houses
-			pos = pos-20;
-			rect.setBounds( 880 - pId*coeficiente , 40 + pos*92 + 30, 20, 30);
-		} else if (  29 <= pos && pos <= 36 ) { // lower houses
-			pos = pos-30;
-			rect.setBounds( 788 - pos*92 , 880 - pId*coeficiente + 30, 20, 30);
-		} else {
-			// error
-		}
-		return rect;
-	}
-	
-	public void rollDice()
-	{
-		
-	}
+	/* END */
 	
 }
