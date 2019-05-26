@@ -1,9 +1,5 @@
 package gui;
 import javax.swing.*;
-
-import game.Logic;
-import game.Player;
-
 import java.awt.*;
 
 @SuppressWarnings("serial")
@@ -17,10 +13,7 @@ public class MainFrame extends JFrame {
 	//public final int W_INC = 16; -- if resizable = true
 	
 	// containers
-	// containers
-	Logic l = new Logic();
-	Player player= this.l.addPlayer();
-	JPanel p = new MainPanel(this, l);
+	JPanel p;
 		
 	// components
 	// none yet --		
@@ -28,6 +21,7 @@ public class MainFrame extends JFrame {
 		super(name);
 		setFrameSizeAndPos();
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		p = new MainPanel(this, 6);
 		getContentPane().add(p);
 		setResizable(false);
 		setVisible(true);

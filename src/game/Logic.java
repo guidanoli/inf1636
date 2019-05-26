@@ -1,18 +1,8 @@
 package game;
 
-import java.awt.Color;
 import java.util.ArrayList;
 
-import org.w3c.dom.ranges.Range;
-
-import com.sun.javafx.geom.Rectangle;
-
-import gui.MainPanel;
-
 public class Logic {
-	
-	// panel
-	//MainPanel mp;
 	
 	// game state
 	int turno = 0; // the first player starts the game
@@ -21,11 +11,12 @@ public class Logic {
 	Dice dice = new Dice();
 	
 	// players
-	
+	protected final int max_player_count = 6;
 	ArrayList<Player> players = new ArrayList<Player>();
 	
-	public Logic(/*MainPanel mp*/) {
-		//this.mp = mp;
+	public Logic(int numOfPlayers) {
+		for( int i = 0; i < numOfPlayers && i < max_player_count; i++ )
+			players.add( new Player(i) );
 	}
 
 	/* rolls a dice */
@@ -33,27 +24,13 @@ public class Logic {
 		dice.roll();
 		int oldPos = players.get(turno).getPos();
 		int newPos = (oldPos + getLastRoll())%37;
-		players.get(turno).setPos( newPos );
+		players.get(turno).setPos(newPos);
 		nextTurn();
 	}
 	
-	public int getLastRoll() {
-		return dice.getLastRoll();
-	}
+	public int getLastRoll() { return dice.getLastRoll(); }
 	
-	public void addPlayer() {
-		int addedPlayerId;
-		if( this.getNumPlayers() > 5 ) {
-			System.out.println("Impossível adicionar mais jogadores");
-		} else {
-			addedPlayerId = this.getNumPlayers() + 1;
-			this.players.add( new Player( addedPlayerId) );
-		}
-	}
-	
-	public ArrayList<Player> getPlayers() {
-		return this.players;
-	}
+	public ArrayList<Player> getPlayers() { return players; }
 	
 	public ArrayList<Integer> getPlayersPos() {
 		ArrayList<Integer> playersPos = new ArrayList<Integer>();
@@ -62,16 +39,13 @@ public class Logic {
 		}
 		return playersPos;
 	}
+	
+	public int getPlayerPos(int i) {
+		Player p = players.get(i);
+		return p.getPos();
+	}
 
-	public int getNumPlayers() {
-		return this.players.size();
-	}
-	public void nextTurn() {
-		int numTurnos = getNumPlayers();
-		if( this.turno == numTurnos - 1 ) {
-			this.turno = 0;
-		} else {
-			this.turno++;
-		}
-	}
+	public int getNumPlayers() { return players.size(); }
+	
+	public void nextTurn() { turno = (turno+1)%getNumPlayers(); }
 }

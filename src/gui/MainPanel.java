@@ -2,12 +2,9 @@ package gui;
 import javax.swing.*;
 
 import java.awt.Rectangle;
-import java.awt.event.*;
 import java.util.ArrayList;
 
-
 import game.Logic;
-import game.Player;
 import img.ImgList;
 
 import java.awt.*;
@@ -16,7 +13,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.stream.Stream;
 
 @SuppressWarnings("serial")
@@ -29,7 +25,7 @@ public class MainPanel extends JPanel {
 	JLabel toast = new JLabel("toast");
 	
 	// logic
-	Logic logic;;
+	Logic logic;
 	
 	// image list
 	private ImgList l;
@@ -47,16 +43,16 @@ public class MainPanel extends JPanel {
 	// listener
 	private PanelMouseListener listener = new PanelMouseListener();
 	
-	public MainPanel(MainFrame frame, Logic logic)
+	public MainPanel( MainFrame frame, int numOfPlayers )
 	{
 		super();
+		logic = new Logic(numOfPlayers);
 		this.frame = frame;
-		this.logic = logic;
 		l = new ImgList();
 		loadSprites("sprites");
 		bgimg = l.getImg("sprites_tabuleiroRJ");
 		dice = l.getImg(String.format("sprites_dados_die_face_%d",this.logic.getLastRoll()));
-		for( int pId = 1; pId <= this.logic.getNumPlayers(); pId++ ) {
+		for( int pId = 0; pId < this.logic.getNumPlayers(); pId++ ) {
 			playersimg.add(l.getImg(String.format("sprites_pinos_pin%d", pId)));
 		}
 		addMouseListener(listener);
