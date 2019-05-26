@@ -34,7 +34,11 @@ public class MainPanel extends JPanel {
 	private Image bgimg;
 	private Image dice;
 	private ArrayList<Image> playersimg = new ArrayList<Image>();
-	
+		
+	// board cell measures
+	private final int longMeasure = 121;
+	private final int shortMeasure = 94;
+	private final int numOfCells = 36;
 	
 	// images borders
 	private Rectangle dice_ret = new Rectangle(220, 650, 100, 100);
@@ -96,7 +100,8 @@ public class MainPanel extends JPanel {
 	{
 		int pId = 0;
 		for( Integer pos : logic.getPlayersPos()) {
-			Rectangle rect = posAsSquare(pos, pId);
+//			Rectangle rect = posAsSquare(pos, pId);
+			Rectangle rect = getPlayerRect(pos, pId);
 			Image i = playersimg.get(pId);
 			paintGameImage(g, i , rect);
 			pId++;
@@ -138,23 +143,84 @@ public class MainPanel extends JPanel {
 		return false;
 	}
 	
+	private Rectangle getPlayerRect(int pos, int pId) {
+		Rectangle cellOffset = getCellOffset(pos);
+		Rectangle playerOffset = getPlayerOffset(pos,pId);
+		Rectangle rect = new Rectangle(20,30);
+		rect.setLocation(cellOffset.x + playerOffset.x - rect.width/2 , cellOffset.y + playerOffset.y - rect.height);
+		return rect;
+	}
+	
+	private Rectangle getCellOffset(int pos) {
+		int x = 7, y = 7;
+		int [] const_coord = {7,7,871,871};
+		double adjustedShortMeasure = shortMeasure + 2.5; /* accounts for borders */
+		int side = ( pos % numOfCells ) / 9;
+		int posInLine = pos % 9;
+		switch(side)
+		{
+		case 0:
+			x = const_coord[side];
+			if( posInLine != 0 ) y += longMeasure + (8-posInLine)*adjustedShortMeasure;
+			else y = const_coord[(posInLine+3)%4];
+			break;
+		case 1:
+			y = const_coord[side];
+			if( posInLine != 0 ) x += longMeasure + (posInLine-1)*adjustedShortMeasure;
+			else x = const_coord[(posInLine+3)%4];
+			break;
+		case 2:
+			x = const_coord[side];
+			if( posInLine != 0 ) y += longMeasure + (posInLine-1)*adjustedShortMeasure;
+			else y = const_coord[(posInLine+3)%4];
+			break;
+		case 3:
+			y = const_coord[side];
+			if( posInLine != 0 ) x += longMeasure + (8-posInLine)*adjustedShortMeasure;
+			else x = const_coord[(posInLine+3)%4];
+			break;
+		}
+		return new Rectangle(x,y,0,0);
+	}
+	
+	private Rectangle getPlayerOffset(int pos, int pId) {
+		Rectangle cellRect = getCellFormatFromPos(pos);
+		int row = pId % 3 + 1;
+		int col = pId / 3 + 1;
+		int row_size = cellRect.width / 4;
+		int col_size = cellRect.height / 3;
+		int width = (row)*row_size;
+		int height = (col)*col_size;
+		return new Rectangle(width,height,0,0);
+	}
+	
+	private Rectangle getCellFormatFromPos(int pos) {
+		if( pos % 9 == 0 )
+			return new Rectangle(longMeasure,longMeasure); /* corner */
+		int side = pos / 9;
+		if( side % 2 == 0 )
+			return new Rectangle(longMeasure,shortMeasure); /* left & right */
+		else
+			return new Rectangle(shortMeasure,longMeasure); /* upper & lower */
+	}
+	
 	private Rectangle posAsSquare(int pos, int pId) {
 		Rectangle rect =  new Rectangle();
 		int coeficiente = 10;
 		if( pId > 3) pId = pId -3;
-		if(  0 <= pos && pos <= 9 ) { // se estiver na coluna da esquerda
+		if(  0 <= pos && pos <= 9 ) { // left houses
 			rect.setBounds( 15 + pId*coeficiente , 880 - pos*92, 20, 30 );
-		} else if(  10 <= pos && pos <= 18 ) { // se estiver na linha de cima
+		} else if(  10 <= pos && pos <= 18 ) { // upper houses
 			pos = pos-10;
 			rect.setBounds( 140 + pos*92 , 45, 20, 30);
-		} else if(  19 <= pos && pos <= 28 ) { // se estiver na coluna da direita
+		} else if(  19 <= pos && pos <= 28 ) { // right houses
 			pos = pos-20;
 			rect.setBounds( 880 - pId*coeficiente , 40 + pos*92 + 30, 20, 30);
-		} else if (  29 <= pos && pos <= 36 ) { // se estiver na linha de baixo
+		} else if (  29 <= pos && pos <= 36 ) { // lower houses
 			pos = pos-30;
 			rect.setBounds( 788 - pos*92 , 880 - pId*coeficiente + 30, 20, 30);
 		} else {
-			// posição com erro.
+			// error
 		}
 		return rect;
 	}
