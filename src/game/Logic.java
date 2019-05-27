@@ -77,7 +77,6 @@ public class Logic {
 		else
 		{
 			nextTurn();
-			emptyToast();
 			state = STATE.ROLL;
 		}
 	}
@@ -102,6 +101,5 @@ public class Logic {
 	public void nextTurn() {
 		turno = (turno+1)%getNumPlayers();
 		System.out.println(turno);
-		addToast(String.format("É o turno do jogador %s!",player_colors[turno]));
 	}
 }

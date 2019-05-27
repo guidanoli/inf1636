@@ -39,7 +39,7 @@ public class MainPanel extends JPanel implements MouseListener {
 	private JButton endTurnBtn = new JButton("Encerrar turno");
 	
 	// graphical components
-	private String toast = new String("É o turno do jogador vermelho!");
+	private String toast = new String("");
 	private Color toastColor = Color.BLACK;
 	private ImgList l;
 	private Image bgimg;
@@ -109,6 +109,15 @@ public class MainPanel extends JPanel implements MouseListener {
 	public void setToast(String msg, Color color) {
 		toastColor = color;
 		toast = msg;
+	}
+	
+	public void updateToast() {
+		if( getToast() == "" )
+		{
+			String t = logic.nextToast();
+			if( t != null )
+				setToast(t);
+		}
 	}
 	
 	public void setToast(String msg) { setToast(msg,toastColor); }
@@ -289,6 +298,7 @@ public class MainPanel extends JPanel implements MouseListener {
 				toastBtnAction();
 			else if( e.getSource() == endTurnBtn )
 				endTurnBtnAction();
+			updateToast();
 		}
 	}
 
@@ -329,7 +339,7 @@ public class MainPanel extends JPanel implements MouseListener {
 		rollBtn.setEnabled(true);
 		nextBtn.setEnabled(false);
 		endTurnBtn.setEnabled(false);
-		setToast("Faça suas jogadas.");
+		setToast("");
 	}
 	
 	// Unimplemented methods
