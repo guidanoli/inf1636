@@ -23,6 +23,7 @@ public class Logic {
 	// players
 	protected final int max_player_count = 6;
 	ArrayList<Player> players = new ArrayList<Player>();
+	final String [] player_colors = {"vermelho","azul","laranja","amarelo","roxo","cinza"};
 	
 	public Logic(int numOfPlayers) {
 		for( int i = 0; i < numOfPlayers && i < max_player_count; i++ )
@@ -34,10 +35,17 @@ public class Logic {
 		dice.roll();
 		int oldPos = players.get(turno).getPos();
 		int newPos = (oldPos + dice.getLastRollSum())%37;
+		if( oldPos > newPos ) doLoopBonus();
 		players.get(turno).setPos(newPos);
+		System.out.println(newPos);
 		nextTurn();
 	}
-		
+	
+	/* player does a loop in the board */
+	public void doLoopBonus() {
+		addToast("+$200");
+	}
+	
 	public String nextToast() {
 		if( toastArray.isEmpty() )
 		{
@@ -49,8 +57,18 @@ public class Logic {
 		return toast;
 	}
 	
+	public void addToast(String toast) {
+		toastArray.add(toast);
+	}
+	
 	public STATE getState() { return state; }
 	
+	public void emptyToast() {
+		while( !toastArray.isEmpty() ) toastArray.remove(0);
+	}
+	
+	public boolean isToastEmpty() { return toastArray.isEmpty(); }
+		
 	public void nextState() {
 		if( state == STATE.ROLL )
 		{
@@ -60,10 +78,12 @@ public class Logic {
 		else if(state == STATE.TOASTS )
 		{
 			state = STATE.END;
+			emptyToast();
 		}
 		else
 		{
 			nextTurn();
+			emptyToast();
 			state = STATE.ROLL;
 		}
 	}
@@ -85,5 +105,8 @@ public class Logic {
 
 	public int getNumPlayers() { return players.size(); }
 	
-	public void nextTurn() { turno = (turno+1)%getNumPlayers(); }
+	public void nextTurn() {
+		turno = (turno+1)%getNumPlayers();
+		addToast(String.format("É o turno do jogador %s!",player_colors[turno]));
+	}
 }

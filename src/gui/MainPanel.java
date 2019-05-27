@@ -39,8 +39,8 @@ public class MainPanel extends JPanel implements MouseListener {
 	private JButton endTurnBtn = new JButton("Encerrar turno");
 	
 	// graphical components
-	private String toast;
-	private Color toastColor;
+	private String toast = new String("É o turno do jogador vermelho!");
+	private Color toastColor = Color.BLACK;
 	private ImgList l;
 	private Image bgimg;
 	private Image dice1, dice2;
@@ -164,8 +164,8 @@ public class MainPanel extends JPanel implements MouseListener {
 	private void paintToast(Graphics g)
 	{
 		g.setFont(new Font("Verdana", Font.BOLD, 24));
-		g.setColor(Color.RED);
-		g.drawString("ALGO DO TIPO SUA VEZ", 145, 845);
+		g.setColor(toastColor);
+		g.drawString(toast, 145, 845);
 	}
 	
 	private void paintBoard(Graphics g)
@@ -226,6 +226,7 @@ public class MainPanel extends JPanel implements MouseListener {
 		double adjustedShortMeasure = shortMeasure + 2.5; /* accounts for borders */
 		int side = ( pos % numOfCells ) / 9;
 		int posInLine = pos % 9;
+		System.out.printf("side = %d posInLine = %d\n",side,posInLine);
 		switch(side)
 		{
 		case 0:
@@ -284,37 +285,54 @@ public class MainPanel extends JPanel implements MouseListener {
 			((JButton) e.getSource()).isEnabled() )
 		{
 			if( e.getSource() == rollBtn )
-			{
-				// Logic
-				logic.roll();
-				logic.nextState();
-				// GUI
-				rollBtn.setEnabled(false);
-				nextBtn.setEnabled(true);
-				endTurnBtn.setEnabled(true);
-				UpdateDice();
-				repaint();
-			}
+				rollBtnAction();
 			else if( e.getSource() == nextBtn )
-			{
-				// Logic
-				if( logic.nextToast() != null ) return;
-				logic.nextState();
-				// GUI
-				nextBtn.setEnabled(false);
-			}
+				toastBtnAction();
 			else if( e.getSource() == endTurnBtn )
-			{
-				// Logic
-				logic.nextState();
-				// GUI
-				rollBtn.setEnabled(true);
-				nextBtn.setEnabled(false);
-				endTurnBtn.setEnabled(false);
-			}
+				endTurnBtnAction();
 		}
 	}
 
+	public void rollBtnAction()
+	{
+		// Logic
+		logic.roll();
+		logic.nextState();
+		// GUI
+		rollBtn.setEnabled(false);
+		nextBtn.setEnabled(true);
+		endTurnBtn.setEnabled(true);
+		toastBtnAction();
+		UpdateDice();
+		repaint();
+	}
+	
+	public void toastBtnAction()
+	{
+		String current_toast = logic.nextToast();
+		// Logic
+		if( current_toast != null )
+		{
+			setToast(current_toast);
+			if(!logic.isToastEmpty())
+				return;
+		}
+		logic.nextState();
+		// GUI
+		nextBtn.setEnabled(false);
+	}
+	
+	public void endTurnBtnAction()
+	{
+		// Logic
+		logic.nextState();
+		// GUI
+		rollBtn.setEnabled(true);
+		nextBtn.setEnabled(false);
+		endTurnBtn.setEnabled(false);
+		setToast("Faça suas jogadas.");
+	}
+	
 	// Unimplemented methods
 	public void mouseEntered(MouseEvent e) { }
 	public void mouseExited(MouseEvent e) { }
