@@ -3,12 +3,22 @@ package game;
 import java.util.ArrayList;
 
 public class Logic {
+
+	private enum STATE {
+		ROLL ,
+		TOASTS ,
+		END
+	};
 	
 	// game state
-	int turno = 0; // the first player starts the game
+	int turno = 0; 				// the first player starts the game
+	STATE state = STATE.ROLL; 	// the game starts with the first player rolling the dice
+	
+	// toast array
+	ArrayList<String> toastArray = new ArrayList<String>();
 	
 	// dice
-	Dice dice = new Dice();
+	public Dice dice = new Dice();
 	
 	// players
 	protected final int max_player_count = 6;
@@ -23,12 +33,39 @@ public class Logic {
 	public void roll() {
 		dice.roll();
 		int oldPos = players.get(turno).getPos();
-		int newPos = (oldPos + getLastRoll())%37;
+		int newPos = (oldPos + dice.getLastRollSum())%37;
 		players.get(turno).setPos(newPos);
 		nextTurn();
 	}
+		
+	public String nextToast() {
+		if( toastArray.isEmpty() ) return null;
+		String toast = toastArray.get(0);
+		toastArray.remove(0);
+		return toast;
+	}
 	
-	public int getLastRoll() { return dice.getLastRoll(); }
+	public void emptyToast() {
+		while(!toastArray.isEmpty()) toastArray.remove(0);
+	}
+	
+	public void nextState() {
+		if( state == STATE.ROLL )
+		{
+			// treat house events
+			state = STATE.TOASTS;
+		}
+		else if(state == STATE.TOASTS )
+		{
+			emptyToast();
+			state = STATE.END;
+		}
+		else
+		{
+			nextTurn();
+			state = STATE.ROLL;
+		}
+	}
 	
 	public ArrayList<Player> getPlayers() { return players; }
 	

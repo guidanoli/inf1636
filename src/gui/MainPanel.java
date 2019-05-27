@@ -2,6 +2,8 @@ package gui;
 import javax.swing.*;
 
 import java.awt.Rectangle;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
 
 import game.Logic;
@@ -16,12 +18,12 @@ import java.nio.file.Paths;
 import java.util.stream.Stream;
 
 @SuppressWarnings("serial")
-public class MainPanel extends JPanel {
+public class MainPanel extends JPanel implements MouseListener {
 	
 	/* *********
 	 * VARIABLES
 	 * ********* */
-	
+		
 	// frame
 	MainFrame frame;
 		
@@ -31,14 +33,22 @@ public class MainPanel extends JPanel {
 	// listener
 	private PanelMouseListener listener = new PanelMouseListener();
 	
+	// swing components
+	private JButton rollBtn = new JButton("Rolar dados");
+	private JButton nextBtn = new JButton("Próxima mensagem");
+	private JButton endTurnBtn = new JButton("Encerrar turno");
+	
 	// graphical components
+	private String toast;
+	private Color toastColor;
 	private ImgList l;
 	private Image bgimg;
-	private Image dice;
+	private Image dice1, dice2;
 	private ArrayList<Image> playersimg = new ArrayList<Image>();
 
 	// images borders
-	private Rectangle dice_ret = new Rectangle(220, 650, 100, 100);
+	private Rectangle dice1_ret = new Rectangle(150, 687, 70, 70);
+	private Rectangle dice2_ret = new Rectangle(240, 687, 70, 70);
 	private Rectangle bgimg_ret = new Rectangle(1000,1000);
 	
 	// board measures
@@ -57,7 +67,30 @@ public class MainPanel extends JPanel {
 		loadSprites("sprites");
 		storeSprites();
 		setAreaListeners();
+		addComponents();
+		setComponentsListeners();
 		repaint();
+	}
+	
+	/* **********
+	 * COMPONENTS
+	 * ********** */
+	
+	private void addComponents()
+	{
+		rollBtn.setBounds(150, 780, 150, 30);
+		nextBtn.setBounds(310, 780, 150, 30);
+		endTurnBtn.setBounds(470, 780, 150, 30);
+		add(rollBtn);
+		add(nextBtn);
+		add(endTurnBtn);
+	}
+	
+	private void setComponentsListeners()
+	{
+		rollBtn.addMouseListener(this);
+		nextBtn.addMouseListener(this);
+		endTurnBtn.addMouseListener(this);
 	}
 	
 	/* **************
@@ -66,13 +99,30 @@ public class MainPanel extends JPanel {
 	
 	public void setAreaListeners()
 	{
-		listener.addArea(dice_ret, new AreaMouseListener() {
-			public void action() {
-				logic.roll();
-				dice = l.getImg(String.format("sprites_dados_die_face_%d",logic.getLastRoll()));
-				repaint();
-			}
-		});
+		
+	}
+	
+	/* *****
+	 * TOAST
+	 * ***** */
+	
+	public void setToast(String msg, Color color) {
+		toastColor = color;
+		toast = msg;
+	}
+	
+	public void setToast(String msg) { setToast(msg,toastColor); }
+	public String getToast() { return toast; }
+	
+	/* ****
+	 * DICE
+	 * **** */
+	
+	private void UpdateDice()
+	{
+		int [] rollResult = logic.dice.getLastRolls();
+		dice1 = l.getImg(String.format("sprites_dados_die_face_%d",rollResult[0]));
+		dice2 = l.getImg(String.format("sprites_dados_die_face_%d",rollResult[1]));
 	}
 	
 	/* ******************
@@ -96,7 +146,8 @@ public class MainPanel extends JPanel {
 	
 	private void paintDice(Graphics g)
 	{
-		paintGameImage(g,dice,dice_ret);
+		paintGameImage(g,dice1,dice1_ret);
+		paintGameImage(g,dice2,dice2_ret);
 	}
 	
 	private void paintPlayers(Graphics g) 
@@ -129,7 +180,7 @@ public class MainPanel extends JPanel {
 	private void storeSprites()
 	{
 		bgimg = l.getImg("sprites_tabuleiroRJ");
-		dice = l.getImg(String.format("sprites_dados_die_face_%d",this.logic.getLastRoll()));
+		UpdateDice();
 		for( int pId = 0; pId < this.logic.getNumPlayers(); pId++ )
 			playersimg.add(l.getImg(String.format("sprites_pinos_pin%d", pId)));
 	}
@@ -221,6 +272,39 @@ public class MainPanel extends JPanel {
 		else
 			return new Rectangle(shortMeasure,longMeasure); /* upper & lower */
 	}
+
+	/* ***************
+	 * MOUSE LISTENERS
+	 * *************** */
+	
+	public void mouseClicked(MouseEvent e) {
+		
+		/* if source is a inactive button, ignore */
+		if( e.getSource() instanceof JButton &&
+		 !((JButton) e.getSource()).isEnabled()) return;
+		
+		if( e.getSource() == rollBtn )
+		{
+			logic.roll();
+			UpdateDice();
+			repaint();
+		}
+		else if( e.getSource() == nextBtn )
+		{
+			String toast = logic.nextToast();
+			if( toast == null ) nextBtn.setEnabled(false);
+		}
+		else if( e.getSource() == endTurnBtn )
+		{
+			
+		}
+	}
+
+	// Unimplemented methods
+	public void mouseEntered(MouseEvent e) { }
+	public void mouseExited(MouseEvent e) { }
+	public void mousePressed(MouseEvent e) { }
+	public void mouseReleased(MouseEvent e) { }
 	
 	/* END */
 	
