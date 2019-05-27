@@ -39,15 +39,17 @@ public class Logic {
 	}
 		
 	public String nextToast() {
-		if( toastArray.isEmpty() ) return null;
+		if( toastArray.isEmpty() )
+		{
+			nextState();
+			return null;
+		}
 		String toast = toastArray.get(0);
 		toastArray.remove(0);
 		return toast;
 	}
 	
-	public void emptyToast() {
-		while(!toastArray.isEmpty()) toastArray.remove(0);
-	}
+	public STATE getState() { return state; }
 	
 	public void nextState() {
 		if( state == STATE.ROLL )
@@ -57,7 +59,6 @@ public class Logic {
 		}
 		else if(state == STATE.TOASTS )
 		{
-			emptyToast();
 			state = STATE.END;
 		}
 		else

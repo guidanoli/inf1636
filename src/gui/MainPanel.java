@@ -280,23 +280,38 @@ public class MainPanel extends JPanel implements MouseListener {
 	public void mouseClicked(MouseEvent e) {
 		
 		/* if source is a inactive button, ignore */
-		if( e.getSource() instanceof JButton &&
-		 !((JButton) e.getSource()).isEnabled()) return;
-		
-		if( e.getSource() == rollBtn )
+		if( e.getSource() instanceof JButton  &&
+			((JButton) e.getSource()).isEnabled() )
 		{
-			logic.roll();
-			UpdateDice();
-			repaint();
-		}
-		else if( e.getSource() == nextBtn )
-		{
-			String toast = logic.nextToast();
-			if( toast == null ) nextBtn.setEnabled(false);
-		}
-		else if( e.getSource() == endTurnBtn )
-		{
-			
+			if( e.getSource() == rollBtn )
+			{
+				// Logic
+				logic.roll();
+				logic.nextState();
+				// GUI
+				rollBtn.setEnabled(false);
+				nextBtn.setEnabled(true);
+				endTurnBtn.setEnabled(true);
+				UpdateDice();
+				repaint();
+			}
+			else if( e.getSource() == nextBtn )
+			{
+				// Logic
+				if( logic.nextToast() != null ) return;
+				logic.nextState();
+				// GUI
+				nextBtn.setEnabled(false);
+			}
+			else if( e.getSource() == endTurnBtn )
+			{
+				// Logic
+				logic.nextState();
+				// GUI
+				rollBtn.setEnabled(true);
+				nextBtn.setEnabled(false);
+				endTurnBtn.setEnabled(false);
+			}
 		}
 	}
 
