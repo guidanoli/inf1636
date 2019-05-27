@@ -226,7 +226,6 @@ public class MainPanel extends JPanel implements MouseListener {
 		double adjustedShortMeasure = shortMeasure + 2.5; /* accounts for borders */
 		int side = ( pos % numOfCells ) / 9;
 		int posInLine = pos % 9;
-		System.out.printf("side = %d posInLine = %d\n",side,posInLine);
 		switch(side)
 		{
 		case 0:

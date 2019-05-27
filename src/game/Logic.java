@@ -37,8 +37,6 @@ public class Logic {
 		int newPos = (oldPos + dice.getLastRollSum())%37;
 		if( oldPos > newPos ) doLoopBonus();
 		players.get(turno).setPos(newPos);
-		System.out.println(newPos);
-		nextTurn();
 	}
 	
 	/* player does a loop in the board */
@@ -47,11 +45,7 @@ public class Logic {
 	}
 	
 	public String nextToast() {
-		if( toastArray.isEmpty() )
-		{
-			nextState();
-			return null;
-		}
+		if( toastArray.isEmpty() ) return null;
 		String toast = toastArray.get(0);
 		toastArray.remove(0);
 		return toast;
@@ -107,6 +101,7 @@ public class Logic {
 	
 	public void nextTurn() {
 		turno = (turno+1)%getNumPlayers();
+		System.out.println(turno);
 		addToast(String.format("É o turno do jogador %s!",player_colors[turno]));
 	}
 }
