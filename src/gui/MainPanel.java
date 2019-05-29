@@ -109,15 +109,13 @@ public class MainPanel extends JPanel implements MouseListener {
 	public void setToast(String msg, Color color) {
 		toastColor = color;
 		toast = msg;
+		repaint();
 	}
 	
 	public void updateToast() {
-		if( getToast() == "" )
-		{
-			String t = logic.nextToast();
-			if( t != null )
-				setToast(t,logic.getCurrentPlayerColor());
-		}
+		String t = logic.nextToast();
+		if( t != null )
+			setToast(t,logic.getCurrentPlayerColor());
 	}
 	
 	public void setToast(String msg) { setToast(msg,toastColor); }
@@ -320,14 +318,8 @@ public class MainPanel extends JPanel implements MouseListener {
 	
 	public void toastBtnAction()
 	{
-		String current_toast = logic.nextToast();
-		// Logic
-		if( current_toast != null )
-		{
-			updateToast();
-			if(!logic.isToastEmpty())
-				return;
-		}
+		if(!logic.isToastEmpty())
+			return;
 		logic.nextState();
 		// GUI
 		nextBtn.setEnabled(false);
@@ -341,7 +333,6 @@ public class MainPanel extends JPanel implements MouseListener {
 		rollBtn.setEnabled(true);
 		nextBtn.setEnabled(false);
 		endTurnBtn.setEnabled(false);
-		setToast("");
 	}
 	
 	// Unimplemented methods

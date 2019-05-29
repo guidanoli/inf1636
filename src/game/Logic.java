@@ -123,7 +123,6 @@ public class Logic {
 	public void nextTurn() {
 		turno = (turno+1)%getNumPlayers();
 		addToast(String.format("É o turno do jogador %s.", playerColorNames[turno]));
-		System.out.println(turno);
 	}
 	
 }
