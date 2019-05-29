@@ -116,7 +116,7 @@ public class MainPanel extends JPanel implements MouseListener {
 		{
 			String t = logic.nextToast();
 			if( t != null )
-				setToast(t);
+				setToast(t,logic.getCurrentPlayerColor());
 		}
 	}
 	
@@ -173,6 +173,8 @@ public class MainPanel extends JPanel implements MouseListener {
 	private void paintToast(Graphics g)
 	{
 		g.setFont(new Font("Verdana", Font.BOLD, 24));
+		g.setColor(toastColor.darker());
+		g.drawString(toast, 144, 846);
 		g.setColor(toastColor);
 		g.drawString(toast, 145, 845);
 	}
@@ -322,7 +324,7 @@ public class MainPanel extends JPanel implements MouseListener {
 		// Logic
 		if( current_toast != null )
 		{
-			setToast(current_toast);
+			updateToast();
 			if(!logic.isToastEmpty())
 				return;
 		}

@@ -1,13 +1,15 @@
 package game;
 
+import java.awt.Color;
+
 public class Player {
 	
 	protected int pos = 0;
-	protected int color;
+	protected Color color;
 	protected int bankAcc;
 	protected static int id;
 	
-	public Player(int color) {
+	public Player(Color color) {
 		this.color = color;
 		Player.id ++;
 		//this.bankAcc = %valorinicial%
@@ -21,7 +23,7 @@ public class Player {
 		this.pos = pos;
 	}
 	
-	public int getColor() {
+	public Color getColor() {
 		return color;
 	}
 	public int getBankAcc() {
