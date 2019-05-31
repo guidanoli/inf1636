@@ -19,7 +19,7 @@ public class Logic {
 	ArrayList<String> toastArray = new ArrayList<String>();
 	
 	// dice
-	public Dice dice = new Dice();
+	public Dice dice = new Dice(2);
 	
 	// players
 	final int max_player_count = 6;
