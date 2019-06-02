@@ -12,6 +12,7 @@ public class EntryPoint {
         ImageIcon icon = new ImageIcon("sprites/pin0.png");
         String decision = (String)JOptionPane.showInputDialog(null, "Quantos serão os jogadores?", 
                 "Novo Jogo", JOptionPane.QUESTION_MESSAGE, icon, options, options[0]);
+        if (decision==null) return;
         int numOfPlayers = Integer.parseInt(decision);
 		new MainFrame("Banco Imobiliário",numOfPlayers);
 	}
