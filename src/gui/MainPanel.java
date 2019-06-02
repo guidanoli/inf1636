@@ -35,20 +35,16 @@ public class MainPanel extends JPanel implements MouseListener {
 	
 	// swing components
 	private JButton rollBtn = new JButton("Rolar dados");
-	private JButton nextBtn = new JButton("Próxima mensagem");
-	private JButton endTurnBtn = new JButton("Encerrar turno");
 	
 	// graphical components
-	private String toast = new String("");
-	private Color toastColor = Color.BLACK;
 	private ImgList l;
 	private Image bgimg;
 	private Image dice1, dice2;
 	private ArrayList<Image> playersimg = new ArrayList<Image>();
 
 	// images borders
-	private Rectangle dice1_ret = new Rectangle(150, 687, 70, 70);
-	private Rectangle dice2_ret = new Rectangle(240, 687, 70, 70);
+	private Rectangle dice1_ret = new Rectangle(150, 737, 70, 70);
+	private Rectangle dice2_ret = new Rectangle(240, 737, 70, 70);
 	private Rectangle bgimg_ret = new Rectangle(1000,1000);
 	
 	// board measures
@@ -78,19 +74,13 @@ public class MainPanel extends JPanel implements MouseListener {
 	
 	private void addComponents()
 	{
-		rollBtn.setBounds(150, 780, 150, 30);
-		nextBtn.setBounds(310, 780, 150, 30);
-		endTurnBtn.setBounds(470, 780, 150, 30);
+		rollBtn.setBounds(150, 830, 150, 30);
 		add(rollBtn);
-		add(nextBtn);
-		add(endTurnBtn);
 	}
 	
 	private void setComponentsListeners()
 	{
 		rollBtn.addMouseListener(this);
-		nextBtn.addMouseListener(this);
-		endTurnBtn.addMouseListener(this);
 	}
 	
 	/* **************
@@ -101,25 +91,6 @@ public class MainPanel extends JPanel implements MouseListener {
 	{
 		
 	}
-	
-	/* *****
-	 * TOAST
-	 * ***** */
-	
-	public void setToast(String msg, Color color) {
-		toastColor = color;
-		toast = msg;
-		repaint();
-	}
-	
-	public void updateToast() {
-		String t = logic.nextToast();
-		if( t != null )
-			setToast(t,logic.getCurrentPlayerColor());
-	}
-	
-	public void setToast(String msg) { setToast(msg,toastColor); }
-	public String getToast() { return toast; }
 	
 	/* ****
 	 * DICE
@@ -140,7 +111,6 @@ public class MainPanel extends JPanel implements MouseListener {
 	{
 		super.paintComponent(g);
 		paintBoard(g);
-		paintToast(g);
 		paintDice(g);
 		paintPlayers(g);
 	}
@@ -166,15 +136,6 @@ public class MainPanel extends JPanel implements MouseListener {
 			paintGameImage(g, i , rect);
 			pId++;
 		}
-	}
-		
-	private void paintToast(Graphics g)
-	{
-		g.setFont(new Font("Verdana", Font.BOLD, 24));
-		g.setColor(toastColor.darker());
-		g.drawString(toast, 144, 846);
-		g.setColor(toastColor);
-		g.drawString(toast, 145, 845);
 	}
 	
 	private void paintBoard(Graphics g)
@@ -294,45 +255,14 @@ public class MainPanel extends JPanel implements MouseListener {
 		{
 			if( e.getSource() == rollBtn )
 				rollBtnAction();
-			else if( e.getSource() == nextBtn )
-				toastBtnAction();
-			else if( e.getSource() == endTurnBtn )
-				endTurnBtnAction();
-			updateToast();
 		}
 	}
 
 	public void rollBtnAction()
 	{
-		// Logic
 		logic.roll();
-		logic.nextState();
-		// GUI
-		rollBtn.setEnabled(false);
-		nextBtn.setEnabled(true);
-		endTurnBtn.setEnabled(true);
-		toastBtnAction();
 		UpdateDice();
 		repaint();
-	}
-	
-	public void toastBtnAction()
-	{
-		if(!logic.isToastEmpty())
-			return;
-		logic.nextState();
-		// GUI
-		nextBtn.setEnabled(false);
-	}
-	
-	public void endTurnBtnAction()
-	{
-		// Logic
-		logic.nextState();
-		// GUI
-		rollBtn.setEnabled(true);
-		nextBtn.setEnabled(false);
-		endTurnBtn.setEnabled(false);
 	}
 	
 	// Unimplemented methods

@@ -4,20 +4,10 @@ import java.awt.Color;
 import java.util.ArrayList;
 
 public class Logic {
-
-	private enum STATE {
-		ROLL ,
-		TOASTS ,
-		END
-	};
 	
 	// game state
-	int turno = 0; 				// the first player starts the game
-	STATE state = STATE.ROLL; 	// the game starts with the first player rolling the dice
-	
-	// toast array
-	ArrayList<String> toastArray = new ArrayList<String>();
-	
+	int turn = 0; // the first player starts the game
+		
 	// dice
 	public Dice dice = new Dice(2);
 	
@@ -51,52 +41,16 @@ public class Logic {
 	/* rolls a dice */
 	public void roll() {
 		dice.roll();
-		int oldPos = players.get(turno).getPos();
+		int oldPos = players.get(turn).getPos();
 		int newPos = (oldPos + dice.getLastRollSum())%37;
 		if( oldPos > newPos ) doLoopBonus();
-		players.get(turno).setPos(newPos);
+		players.get(turn).setPos(newPos);
+		nextTurn();
 	}
 	
 	/* player does a loop in the board */
 	protected void doLoopBonus() {
-		addToast("+$200");
-	}
-	
-	public String nextToast() {
-		if( toastArray.isEmpty() ) return null;
-		String toast = toastArray.get(0);
-		toastArray.remove(0);
-		return toast;
-	}
-	
-	protected void addToast(String toast) {
-		toastArray.add(toast);
-	}
-	
-	public STATE getState() { return state; }
-	
-	public void emptyToast() {
-		while( !toastArray.isEmpty() ) toastArray.remove(0);
-	}
-	
-	public boolean isToastEmpty() { return toastArray.isEmpty(); }
-		
-	public void nextState() {
-		if( state == STATE.ROLL )
-		{
-			// treat house events
-			state = STATE.TOASTS;
-		}
-		else if(state == STATE.TOASTS )
-		{
-			state = STATE.END;
-			emptyToast();
-		}
-		else
-		{
-			nextTurn();
-			state = STATE.ROLL;
-		}
+		System.out.println("Loop bonus!");
 	}
 	
 	public ArrayList<Player> getPlayers() { return players; }
@@ -115,14 +69,13 @@ public class Logic {
 	}
 
 	public Color getCurrentPlayerColor() {
-		return playerColorIds[turno];
+		return playerColorIds[turn];
 	}
 	
 	public int getNumPlayers() { return players.size(); }
 	
 	public void nextTurn() {
-		turno = (turno+1)%getNumPlayers();
-		addToast(String.format("É o turno do jogador %s.", playerColorNames[turno]));
+		turn = (turn+1)%getNumPlayers();
 	}
 	
 }

@@ -3,16 +3,18 @@ package game;
 import java.awt.Color;
 
 public class Player {
+
+	protected static int count = 0;
 	
+	protected int id;
 	protected int pos = 0;
 	protected Color color;
-	protected int bankAcc;
-	protected static int id;
+	protected int bankAcc = 2458;
 	
 	public Player(Color color) {
 		this.color = color;
-		Player.id ++;
-		//this.bankAcc = %valorinicial%
+		this.id = count;
+		Player.count ++;
 	}
 	
 	public int getPos() {
