@@ -44,7 +44,7 @@ public class MainPanel extends JPanel implements MouseListener {
 
 	// images borders
 	private Rectangle dice1_ret = new Rectangle(150, 737, 70, 70);
-	private Rectangle dice2_ret = new Rectangle(240, 737, 70, 70);
+	private Rectangle dice2_ret = new Rectangle(230, 737, 70, 70);
 	private Rectangle bgimg_ret = new Rectangle(1000,1000);
 	
 	// board measures
@@ -123,6 +123,14 @@ public class MainPanel extends JPanel implements MouseListener {
 	
 	private void paintDice(Graphics g)
 	{
+		int margin = 10;
+		g.setColor(logic.getCurrentPlayerColor());
+		g.fillRect(
+			(int) (dice1_ret.getMinX() - margin),
+			(int) (dice1_ret.getMinY() - margin),
+			(int) (dice2_ret.getMaxX() - dice1_ret.getMinX() + 2*margin),
+			(int) (dice2_ret.getMaxY() - dice1_ret.getMinY() + 2*margin)
+		); // player turn indicator
 		paintGameImage(g,dice1,dice1_ret);
 		paintGameImage(g,dice2,dice2_ret);
 	}
