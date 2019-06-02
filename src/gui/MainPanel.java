@@ -23,17 +23,25 @@ public class MainPanel extends JPanel implements MouseListener {
 	 * VARIABLES
 	 * ********* */
 		
-	// frame
+	// parent frame
 	MainFrame frame;
 		
 	// logic
 	Logic logic = Logic.getInstance();
-
-	// listener
-	private PanelMouseListener listener = new PanelMouseListener();
 	
 	// swing components
 	private JButton rollBtn = new JButton("Rolar dados");
+	private JButton endTurnBtn = new JButton("Terminar turno");
+	private JButton buyBtn = new JButton("Comprar");
+	private JButton showDeckBtn = new JButton("Mostrar deque");
+	private JButton showBalanceBtn = new JButton("Mostrar saldo");
+	JButton [] btnGrid = {
+			rollBtn ,
+			buyBtn ,
+			showDeckBtn ,
+			showBalanceBtn ,
+			endTurnBtn
+	};
 	
 	// graphical components
 	private ImgList l;
@@ -41,9 +49,10 @@ public class MainPanel extends JPanel implements MouseListener {
 	private Image dice1, dice2;
 	private ArrayList<Image> playersimg = new ArrayList<Image>();
 
-	// images borders
-	private Rectangle dice1_ret = new Rectangle(150, 737, 70, 70);
-	private Rectangle dice2_ret = new Rectangle(230, 737, 70, 70);
+	// panel mouse listener and image bounds
+	private PanelMouseListener listener = new PanelMouseListener();
+	private Rectangle dice1_ret = new Rectangle(320, 780, 70, 70);
+	private Rectangle dice2_ret = new Rectangle(400, 780, 70, 70);
 	private Rectangle bgimg_ret = new Rectangle(1000,1000);
 	
 	// board measures
@@ -63,7 +72,6 @@ public class MainPanel extends JPanel implements MouseListener {
 		storeSprites();
 		setAreaListeners();
 		addComponents();
-		setComponentsListeners();
 		repaint();
 	}
 	
@@ -73,13 +81,12 @@ public class MainPanel extends JPanel implements MouseListener {
 	
 	private void addComponents()
 	{
-		rollBtn.setBounds(150, 830, 150, 30);
-		add(rollBtn);
-	}
-	
-	private void setComponentsListeners()
-	{
-		rollBtn.addMouseListener(this);
+		for(int i = 0 ; i < btnGrid.length; i++) {
+			JButton btn = btnGrid[i];
+			btn.setBounds(150, 830-40*i, 150, 30);
+			btn.addMouseListener(this);
+			add(btn);
+		}
 	}
 	
 	/* **************
