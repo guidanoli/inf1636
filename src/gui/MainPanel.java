@@ -7,7 +7,6 @@ import java.awt.event.MouseListener;
 import java.util.ArrayList;
 
 import game.Logic;
-import img.ImgList;
 
 import java.awt.*;
 import java.io.File;
@@ -87,7 +86,7 @@ public class MainPanel extends JPanel implements MouseListener {
 	 * AREA LISTENERS
 	 * ************** */
 	
-	public void setAreaListeners()
+	private void setAreaListeners()
 	{
 		
 	}
@@ -209,22 +208,22 @@ public class MainPanel extends JPanel implements MouseListener {
 		case 0:
 			x = const_coord[side];
 			if( posInLine != 0 ) y += longMeasure + (8-posInLine)*adjustedShortMeasure;
-			else y = const_coord[(posInLine+3)%4];
+			else y = const_coord[(side+3)%4];
 			break;
 		case 1:
 			y = const_coord[side];
 			if( posInLine != 0 ) x += longMeasure + (posInLine-1)*adjustedShortMeasure;
-			else x = const_coord[(posInLine+3)%4];
+			else x = const_coord[(side+3)%4];
 			break;
 		case 2:
 			x = const_coord[side];
 			if( posInLine != 0 ) y += longMeasure + (posInLine-1)*adjustedShortMeasure;
-			else y = const_coord[(posInLine+3)%4];
+			else y = const_coord[(side+3)%4];
 			break;
 		case 3:
 			y = const_coord[side];
 			if( posInLine != 0 ) x += longMeasure + (8-posInLine)*adjustedShortMeasure;
-			else x = const_coord[(posInLine+3)%4];
+			else x = const_coord[(side+3)%4];
 			break;
 		}
 		return new Rectangle(x,y,0,0);
@@ -257,7 +256,7 @@ public class MainPanel extends JPanel implements MouseListener {
 	
 	public void mouseClicked(MouseEvent e) {
 		
-		/* if source is a inactive button, ignore */
+		/* if source is an inactive button, ignore */
 		if( e.getSource() instanceof JButton  &&
 			((JButton) e.getSource()).isEnabled() )
 		{
@@ -266,7 +265,7 @@ public class MainPanel extends JPanel implements MouseListener {
 		}
 	}
 
-	public void rollBtnAction()
+	private void rollBtnAction()
 	{
 		logic.roll();
 		UpdateDice();

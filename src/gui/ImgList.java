@@ -1,4 +1,4 @@
-package img;
+package gui;
 import java.awt.*;
 import java.io.*;
 import java.util.HashMap;

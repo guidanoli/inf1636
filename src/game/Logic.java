@@ -49,10 +49,9 @@ public class Logic {
 	public void roll() {
 		dice.roll();
 		int oldPos = players.get(turn).getPos();
-		int newPos = (oldPos + dice.getLastRollSum())%37;
+		int newPos = (oldPos + dice.getLastRollSum())%36;
 		if( oldPos > newPos ) doLoopBonus();
 		players.get(turn).setPos(newPos);
-		nextTurn();
 	}
 	
 	/* player does a loop in the board */
