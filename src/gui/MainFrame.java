@@ -17,11 +17,11 @@ public class MainFrame extends JFrame {
 		
 	// components
 	// none yet --		
-	public MainFrame(String name) {
+	public MainFrame(String name, int numOfPlayers) {
 		super(name);
 		setFrameSizeAndPos();
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		p = new MainPanel(this, 6);
+		p = new MainPanel(this, numOfPlayers);
 		getContentPane().add(p);
 		p.setLayout(null);
 		setResizable(false);
@@ -36,7 +36,4 @@ public class MainFrame extends JFrame {
 		setBounds(x, y, DEF_W + W_INC, DEF_H + H_INC);
 	}
 	
-	public static void main(String[] args) {
-		new MainFrame("Banco Imobiliário");
-	}
 }

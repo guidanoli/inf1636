@@ -28,7 +28,7 @@ public class MainPanel extends JPanel implements MouseListener {
 	MainFrame frame;
 		
 	// logic
-	Logic logic;
+	Logic logic = Logic.getInstance();
 
 	// listener
 	private PanelMouseListener listener = new PanelMouseListener();
@@ -55,8 +55,8 @@ public class MainPanel extends JPanel implements MouseListener {
 	public MainPanel( MainFrame frame, int numOfPlayers )
 	{
 		super();
-		logic = new Logic(numOfPlayers);
 		this.frame = frame;
+		this.logic.setNumOfPlayers(numOfPlayers);
 		l = new ImgList();
 		addMouseListener(listener);
 		setBackground(Color.WHITE);

@@ -5,6 +5,9 @@ import java.util.ArrayList;
 
 public class Logic {
 	
+	// singleton
+	private static final Logic INSTANCE = new Logic(); 
+	
 	// game state
 	int turn = 0; // the first player starts the game
 		
@@ -33,10 +36,14 @@ public class Logic {
 											new Color(128,116,102)
 										};
 	
-	public Logic(int numOfPlayers) {
+	private Logic() { }
+	
+	public void setNumOfPlayers(int numOfPlayers) {
 		for( int i = 0; i < numOfPlayers && i < max_player_count; i++ )
 			players.add( new Player(playerColorIds[i]) );
 	}
+	
+	public static Logic getInstance() { return INSTANCE; }
 
 	/* rolls a dice */
 	public void roll() {
