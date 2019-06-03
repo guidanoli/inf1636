@@ -31,15 +31,15 @@ public class MainPanel extends JPanel implements MouseListener {
 	
 	// swing components
 	private JButton rollBtn = new JButton("Rolar dados");
-	private JButton endTurnBtn = new JButton("Terminar turno");
 	private JButton buyBtn = new JButton("Comprar");
+	private JButton endTurnBtn = new JButton("Terminar turno");
 	private JButton showDeckBtn = new JButton("Mostrar deque");
 	private JButton showBalanceBtn = new JButton("Mostrar saldo");
 	JButton [] btnGrid = {
 			rollBtn ,
-			buyBtn ,
 			showDeckBtn ,
 			showBalanceBtn ,
+			buyBtn ,
 			endTurnBtn
 	};
 	
@@ -86,6 +86,7 @@ public class MainPanel extends JPanel implements MouseListener {
 			btn.setBounds(150, 830-40*i, 150, 30);
 			btn.addMouseListener(this);
 			add(btn);
+			updateButtons();
 		}
 	}
 	
@@ -261,22 +262,33 @@ public class MainPanel extends JPanel implements MouseListener {
 	 * MOUSE LISTENERS
 	 * *************** */
 	
-	public void mouseClicked(MouseEvent e) {
-		
-		/* if source is an inactive button, ignore */
-		if( e.getSource() instanceof JButton  &&
-			((JButton) e.getSource()).isEnabled() )
-		{
-			if( e.getSource() == rollBtn )
-				rollBtnAction();
-		}
+	public void updateButtons() {
+		rollBtn.setEnabled(logic.canRoll());
+		buyBtn.setEnabled(logic.canBuy());
+		endTurnBtn.setEnabled(logic.canEnd());
 	}
-
-	private void rollBtnAction()
-	{
-		logic.roll();
-		UpdateDice();
-		repaint();
+	
+	public void mouseClicked(MouseEvent e) {
+		if( e.getSource() instanceof JButton )
+		{
+			/* if source is an inactive button, ignore */
+			JButton btnSource = (JButton) e.getSource();
+			if( !btnSource.isEnabled() ) return;
+			
+			if( btnSource == rollBtn )
+			{
+				logic.roll();
+				UpdateDice();
+				repaint();
+			}
+			else if( btnSource == endTurnBtn )
+			{
+				logic.endTurn();
+				repaint();
+			}
+			
+			updateButtons();
+		}
 	}
 	
 	// Unimplemented methods

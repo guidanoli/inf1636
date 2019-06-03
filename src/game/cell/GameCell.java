@@ -1,12 +1,12 @@
 package game.cell;
 
 /**
- * A game cell does not have a owner, but it can charge
- * or provide amount from/to the player that steps on it
+ * A game cell does not have an owner, but it can charge
+ * or provide amounts from/to the player that steps on it
  * just like an ownable cell.
  * 
  * @author guidanoli
- *
+ * @see OwnableCell
  */
 public abstract class GameCell extends AbstractCell {
 

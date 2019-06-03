@@ -5,7 +5,7 @@ import game.Player;
 
 /**
  * An abstract cell is the parent class for all the
- * cell classes in the game package. It allows an extra
+ * cell classes in the game.cell package. It allows an extra
  * layer of abstraction and organization. It is subdivided
  * into two main children: {@link GameCell} and {@link OwnableCell}.
  * @author guidanoli
@@ -20,6 +20,8 @@ public abstract class AbstractCell {
 	 * Constructs an abstract cell
 	 * @param pos - position of cell in board from starting point.
 	 * @param isOwnable - if the cell can be owned/bought by a player.
+	 * @see GameCell
+	 * @see OwnableCell
 	 */
 	public AbstractCell(int pos, boolean isOwnable) {
 		this.pos = pos;
@@ -28,10 +30,10 @@ public abstract class AbstractCell {
 	
 	/**
 	 * <p>Charges player of certain amount for stepping in this cell.
-	 * <p><b>This function should <b>NOT</b> subtract from the Player' balance!!</b>
+	 * <p><b>This function should <b>NOT</b> subtract from the Player's balance!!</b>
 	 * @param player - player that stepped on the cell
 	 * @param diceSum - the sum of the dice values
-	 * @return the amount subtracted from the players' balance
+	 * @return the amount that will be subtracted from the players' balance
 	 * @see Dice#getLastRollSum() getLastRollSum()
 	 */
 	int charge(Player player, int diceSum) { return 0; }
@@ -40,7 +42,7 @@ public abstract class AbstractCell {
 	 * @return {@code true} if the cell is ownable,
 	 * and {@code false} otherwise.
 	 * <ul><li>Every OwnableCell is ownable.</li>
-	 * <li>every GameCell is not ownable.</li></ul>
+	 * <li>Every GameCell is not ownable.</li></ul>
 	 * @see OwnableCell
 	 * @see GameCell
 	 */

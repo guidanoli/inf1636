@@ -51,6 +51,9 @@ public abstract class OwnableCell extends AbstractCell {
 	 */
 	public Player getOwner() { return owner; }
 
+	/**
+	 * @return fee charged to buy/own cell
+	 */
 	public int getBuyingFee() { return buyingFee; }
 	
 	/**
@@ -78,14 +81,16 @@ public abstract class OwnableCell extends AbstractCell {
 	
 	/**
 	 * {@inheritDoc}
-	 * <p>Transfers the amount to the owner
-	 * <p>Does <b>NOT</b> charge the cell owner.
-	 * <p>Does <b>NOT</b> charge if there is no owner.
+	 * <ul>
+	 * <li><p>Transfers the amount to the owner</li>
+	 * <li><p>Does <b>NOT</b> charge the cell owner.</li>
+	 * <li><p>Does <b>NOT</b> charge if there is no owner.</li>
+	 * </ul>
 	 */
 	int charge(Player player, int diceSum) {
 		if( owner == null || player == owner ) return 0;
 		int fee = getChargeValue(player,diceSum);
-		// TODO: transfer the amount to the owner's bank account
+		owner.accountTransfer(fee);
 		return fee;
 	}
 	
