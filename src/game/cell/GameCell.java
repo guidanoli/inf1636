@@ -12,10 +12,11 @@ public abstract class GameCell extends AbstractCell {
 
 	/**
 	 * <p>Constructs a game cell
+	 * @param name - name of the cell
 	 * @param pos - position of cell in board from starting point.
 	 */
-	public GameCell(int pos) {
-		super(pos, false);
+	public GameCell(String name, int pos) {
+		super(name, pos, false);
 	}
 
 }

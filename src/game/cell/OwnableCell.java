@@ -28,10 +28,11 @@ public abstract class OwnableCell extends AbstractCell {
 	
 	/**
 	 * <p>Constructs ownable cell
+	 * @param name - name of the cell
 	 * @param pos - position of cell in board from starting point.
 	 */
-	public OwnableCell(int pos, int buyingFee) {
-		super(pos, true);
+	public OwnableCell(String name, int pos, int buyingFee) {
+		super(name, pos, true);
 		this.buyingFee = buyingFee;
 	}
 	

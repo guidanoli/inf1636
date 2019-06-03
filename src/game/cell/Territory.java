@@ -30,6 +30,7 @@ public class Territory extends OwnableCell {
 	
 	/**
 	 * <p>Constructs a territory cell 
+	 * @param name - name of the cell
 	 * @param pos - position of cell in board from starting point.
 	 * @param buyingFee - fee charged from the new owner in the
 	 * moment of buying it.
@@ -46,13 +47,13 @@ public class Territory extends OwnableCell {
 	 * more costful to be stepped each new level, that is, the
 	 * higher the index of the array.
 	 */
-	public Territory(int pos, int buyingFee, int upgradingFee, int groundFee, int... steppingFees) {
-		super(pos,buyingFee);
+	public Territory(String name, int pos, int buyingFee, int upgradingFee, int groundFee, int... steppingFees) {
+		super(name, pos,buyingFee);
 		this.steppingFees = new int[steppingFees.length+1];
 		this.steppingFees[0] = groundFee;
+		this.upgradingFee = upgradingFee;
 		for(int i = 0 ; i < steppingFees.length; i++)
 			this.steppingFees[i+1] = steppingFees[i];
-		this.upgradingFee = upgradingFee;
 	}
 	
 	/**

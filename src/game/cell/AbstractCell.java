@@ -14,16 +14,18 @@ import game.Player;
 public abstract class AbstractCell {
 
 	private int pos;
+	private String name;
 	private boolean isOwnable;
 	
 	/**
 	 * Constructs an abstract cell
+	 * @param name - name of the cell
 	 * @param pos - position of cell in board from starting point.
 	 * @param isOwnable - if the cell can be owned/bought by a player.
 	 * @see GameCell
 	 * @see OwnableCell
 	 */
-	public AbstractCell(int pos, boolean isOwnable) {
+	public AbstractCell(String name, int pos, boolean isOwnable) {
 		this.pos = pos;
 		this.isOwnable = isOwnable;
 	}
@@ -52,5 +54,19 @@ public abstract class AbstractCell {
 	 * @return position of cell in board from starting point
 	 */
 	int getPosition() { return pos; }
+
+	/**
+	 * @return the name
+	 */
+	public String getName() {
+		return name;
+	}
+
+	/**
+	 * @param name the name to set
+	 */
+	public void setName(String name) {
+		this.name = name;
+	}
 	
 }

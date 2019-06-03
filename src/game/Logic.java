@@ -2,6 +2,10 @@ package game;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.Iterator;
+
+import game.cell.*;
+import io.LocalResources;
 
 /**
  * <p>Logic is a class that generates a singleton that manages
@@ -48,14 +52,20 @@ public class Logic {
 		new Color(128,116,102)
 	};
 	
+	// cells
+	public final int numOfCells = 36; 
+	private AbstractCell [] cells = new AbstractCell[numOfCells];
+	
 	/* *********
 	 * SINGLETON
 	 * ********* */
 	
-	private Logic() { }
+	private Logic() {
+		loadCells();
+	}
 
 	/**
-	 * <p>Get instance of Logic
+	 * <p>Gets instance of Logic
 	 * @return Logic class {@code singleton}
 	 */
 	public static Logic getInstance() { return INSTANCE; }
@@ -116,6 +126,63 @@ public class Logic {
 	 */
 	public int getNumPlayers() { return players.size(); }
 	
+	/* *****
+	 * CELLS
+	 * ***** */
+	
+	private void loadCells() {
+		String cellInfoPath = LocalResources.metaFolder + "cells_info.csv";
+		ArrayList<ArrayList<String>> argList = CSVReader.read(cellInfoPath, true);
+		Iterator<ArrayList<String>> iterator = argList.iterator();
+		while(iterator.hasNext()) {
+			ArrayList<String> cell = iterator.next();
+			assert(cell.size() >= 3); //bad format!
+			int pos = Integer.parseInt(cell.get(0));
+			String name = cell.get(1);
+			int type = Integer.parseInt(cell.get(2));
+			AbstractCell newCell = null;
+			switch(type) {
+			case 0:
+				// inert cell
+				break;
+			case 1:
+				// chance
+				break;
+			case 2:
+				// go to prison
+				break;
+			case 3:
+				// transaction cell
+				break;
+			case 4:
+				// territory
+				assert(cell.size() >= 7);
+				int [] additionalFees = null;
+				if( cell.size() > 8 ) {
+					additionalFees = new int[cell.size()-7];
+					for(int i = 0 ; i < additionalFees.length; i++)
+						additionalFees[i] = Integer.parseInt(cell.get(i+7));
+				}
+				newCell = new Territory(name,
+										pos,
+										Integer.parseInt(cell.get(4)),
+										Integer.parseInt(cell.get(5)),
+										Integer.parseInt(cell.get(6)),
+										additionalFees);
+				break;
+			case 5:
+				// service
+				assert(cell.size() == 6);
+				newCell = new Service(	name,
+										pos,
+										Integer.parseInt(cell.get(4)),
+										Integer.parseInt(cell.get(5)));
+				break;
+			}
+			cells[pos] = newCell;
+		}
+	}
+	
 	/* *************
 	 * GAME COMMANDS
 	 * ************* */
@@ -132,7 +199,7 @@ public class Logic {
 		dice.roll();
 		Player p = players.get(turn);
 		int oldPos = p.getPos();
-		int newPos = (oldPos + dice.getLastRollSum())%36;
+		int newPos = (oldPos + dice.getLastRollSum())%numOfCells;
 		if( oldPos > newPos ) p.accountTransfer(200); // starting point bonus
 		p.setPos(newPos);
 	}
@@ -156,17 +223,21 @@ public class Logic {
 	
 	/**
 	 * <p>Two state deterministic finite automaton A = (Q,E,d)
-	 * <p><b>Q = {r,p}</b>
-	 * <ul><li>r: roll</li>
-	 * <li>p: player actions</li></ul>
+	 * <p><b>Q = {R,P}</b>
+	 * <ul><li>R: roll</li>
+	 * <li>P: player actions</li></ul>
 	 * <p><b>E = {0,1}</b>
 	 * <ul><li>0: roll()</li>
 	 * <li>1: endTurn()</li></ul>
-	 * <p><b>d:QxE->E</b>
-	 * <ul><li>d(r,0)=1</li>
-	 * <li>d(p,1)=0</li></ul>
-	 * <p>canRoll() -> <b>current state == r ?</b>
-	 * <p>canEnd() -> <b>current state == p ?</b>
+	 * <p><b>d:QxE->Q</b>
+	 * <ul><li>d(R,0)=P</li>
+	 * <li>d(P,1)=R</li></ul>
+	 * <p><b>Enabled when current state is R:</b>
+	 * <ul><li>canRoll()</li></ul>
+	 * <p><b>Enabled when current state is P:</b>
+	 * <ul><li>canEndTurn()</li>
+	 * <li>canBuy()</li>
+	 * <li>canUpgrade()</li></ul>
 	 */
 	private boolean canRollFlag = true;
 	
@@ -174,7 +245,7 @@ public class Logic {
 		return canRollFlag;
 	}
 	
-	public boolean canEnd() {
+	public boolean canEndTurn() {
 		return !canRollFlag;
 	}
 	
@@ -182,8 +253,8 @@ public class Logic {
 		return !canRollFlag;
 	}
 	
-//	public boolean canBuy() {
-//		return !canRollFlag;
-//	}
+	public boolean canUpgrade() {
+		return !canRollFlag;
+	}
 	
 }

@@ -1,0 +1,38 @@
+
+cells_info.csv is a comma separated values file.
+The header follows:
+
+Posição | Nome | Tipo | 1..Nº Argumento
+
+or 
+
+Position | Name | Type | 1..Nth Argument
+
+********************************************************
+
+Position = position in board from starting point
+
+Name = name of the cell
+
+Tipo = internal identification for cell type
+
+0 = Inert cell (does not interact with player)
+1 = Sorte ou Revés cell (chance)
+2 = Go To Prison
+3 = Transaction cell (only does a transaction)
+4 = Territory
+5 = Service
+
+Arguments = additional internal argument passed to the
+corresponding cell type class constructor
+
+0 = no arguments
+1 = no arguments
+2 = no arguments
+3 = transaction delta
+4 = image filename | buying fee | upgrade fee | stepping fees...
+5 = image filename | buying fee | multiplier
+
+Be aware that the image filename does not contain the full path
+but only the filename. The real location will be processed
+internally on the java source code.

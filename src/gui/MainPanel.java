@@ -7,6 +7,8 @@ import java.awt.event.MouseListener;
 import java.util.ArrayList;
 
 import game.Logic;
+import io.ImgList;
+import io.LocalResources;
 
 import java.awt.*;
 import java.io.File;
@@ -32,6 +34,7 @@ public class MainPanel extends JPanel implements MouseListener {
 	// swing components
 	private JButton rollBtn = new JButton("Rolar dados");
 	private JButton buyBtn = new JButton("Comprar");
+	private JButton upgradeBtn = new JButton("Construir");
 	private JButton endTurnBtn = new JButton("Terminar turno");
 	private JButton showDeckBtn = new JButton("Mostrar deque");
 	private JButton showBalanceBtn = new JButton("Mostrar saldo");
@@ -39,36 +42,38 @@ public class MainPanel extends JPanel implements MouseListener {
 			rollBtn ,
 			showDeckBtn ,
 			showBalanceBtn ,
+			upgradeBtn ,
 			buyBtn ,
 			endTurnBtn
 	};
 	
 	// graphical components
-	private ImgList l;
+	private ImgList imgList = ImgList.getInstance();
 	private Image bgimg;
 	private Image dice1, dice2;
 	private ArrayList<Image> playersimg = new ArrayList<Image>();
 
 	// panel mouse listener and image bounds
 	private PanelMouseListener listener = new PanelMouseListener();
-	private Rectangle dice1_ret = new Rectangle(320, 780, 70, 70);
-	private Rectangle dice2_ret = new Rectangle(400, 780, 70, 70);
+	private int dice_lower_x = 150;
+	private int dice_side = 70;
+	private int dice_margin = 10;
+	private Rectangle dice1_ret = new Rectangle(dice_lower_x, 780, dice_side, dice_side);
+	private Rectangle dice2_ret = new Rectangle(dice_lower_x + dice_side + dice_margin, 780, dice_side, dice_side);
 	private Rectangle bgimg_ret = new Rectangle(1000,1000);
 	
 	// board measures
 	private final int longMeasure = 121;
 	private final int shortMeasure = 94;
-	private final int numOfCells = 36;
 	
 	public MainPanel( MainFrame frame, int numOfPlayers )
 	{
 		super();
 		this.frame = frame;
 		this.logic.setNumOfPlayers(numOfPlayers);
-		l = new ImgList();
 		addMouseListener(listener);
 		setBackground(Color.WHITE);
-		loadSprites("sprites");
+		loadSprites(LocalResources.spritesFolder);
 		storeSprites();
 		setAreaListeners();
 		addComponents();
@@ -81,9 +86,13 @@ public class MainPanel extends JPanel implements MouseListener {
 	
 	private void addComponents()
 	{
+		int w = 150;
+		int h = 30;
+		int margin = 10;
+		int lower_y = 830;
 		for(int i = 0 ; i < btnGrid.length; i++) {
 			JButton btn = btnGrid[i];
-			btn.setBounds(150, 830-40*i, 150, 30);
+			btn.setBounds(bgimg_ret.width/2 - w/2, lower_y-(h+margin)*i, w, h);
 			btn.addMouseListener(this);
 			add(btn);
 			updateButtons();
@@ -106,8 +115,8 @@ public class MainPanel extends JPanel implements MouseListener {
 	private void UpdateDice()
 	{
 		int [] rollResult = logic.dice.getLastRolls();
-		dice1 = l.getImg(String.format("sprites_dados_die_face_%d",rollResult[0]));
-		dice2 = l.getImg(String.format("sprites_dados_die_face_%d",rollResult[1]));
+		dice1 = imgList.getImg(String.format("die_face_%d",rollResult[0]));
+		dice2 = imgList.getImg(String.format("die_face_%d",rollResult[1]));
 	}
 	
 	/* ******************
@@ -164,10 +173,10 @@ public class MainPanel extends JPanel implements MouseListener {
 	
 	private void storeSprites()
 	{
-		bgimg = l.getImg("sprites_tabuleiroRJ");
+		bgimg = imgList.getImg("tabuleiroRJ");
 		UpdateDice();
 		for( int pId = 0; pId < this.logic.getNumPlayers(); pId++ )
-			playersimg.add(l.getImg(String.format("sprites_pinos_pin%d", pId)));
+			playersimg.add(imgList.getImg(String.format("pin%d", pId)));
 	}
 	
 	private void loadSprites(String spritesDir)
@@ -181,7 +190,7 @@ public class MainPanel extends JPanel implements MouseListener {
 	}
 	
 	private void addImgThroughPath(Path path) {
-		l.addImg(path.toString());
+		imgList.addImg(path.toString());
 		System.out.printf("Image '%s' added.\n",path.toString());
 	}
 	
@@ -209,7 +218,7 @@ public class MainPanel extends JPanel implements MouseListener {
 		int x = 7, y = 7;
 		int [] const_coord = {7,7,871,871};
 		double adjustedShortMeasure = shortMeasure + 2.5; /* accounts for borders */
-		int side = ( pos % numOfCells ) / 9;
+		int side = ( pos % logic.numOfCells ) / 9;
 		int posInLine = pos % 9;
 		switch(side)
 		{
@@ -265,7 +274,8 @@ public class MainPanel extends JPanel implements MouseListener {
 	public void updateButtons() {
 		rollBtn.setEnabled(logic.canRoll());
 		buyBtn.setEnabled(logic.canBuy());
-		endTurnBtn.setEnabled(logic.canEnd());
+		endTurnBtn.setEnabled(logic.canEndTurn());
+		upgradeBtn.setEnabled(logic.canUpgrade());
 	}
 	
 	public void mouseClicked(MouseEvent e) {

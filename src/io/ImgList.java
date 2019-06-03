@@ -1,4 +1,4 @@
-package gui;
+package io;
 import java.awt.*;
 import java.io.*;
 import java.util.HashMap;
@@ -18,16 +18,19 @@ import javax.imageio.*;
  *
  */
 public class ImgList {
-	protected Map<String,Image> imglist;
+	
+	private static final ImgList INSTANCE = new ImgList();
+	protected Map<String,Image> imglist = new HashMap<String,Image>();;
+	
+	private ImgList() { }
 	
 	/**
-	 * <h1>ImgList</h1>
-	 * <p>{@code public ImgList()}
-	 * <p>Constructs an empty Image List
+	 * <h1>getInstance()</h1>
+	 * <p>{@code public static ImgList getInstance()}
+	 * <p>Gets an instance of ImgList
+	 * @return ImgList class {@code singleton}
 	 */
-	public ImgList() {
-		imglist = new HashMap<String,Image>();
-	}
+	public static ImgList getInstance() { return INSTANCE; }
 	
 	/**
 	 * <p>{@code public Image addImg(String path)}
@@ -43,7 +46,6 @@ public class ImgList {
 		String formattedPath = formatPath(path);
 		if( imglist.containsKey(formattedPath) )
 		{
-			System.out.printf("Image '%s' already loaded!",path);
 			return imglist.get(formattedPath);
 		}
 		try {
@@ -70,28 +72,22 @@ public class ImgList {
 	/**
 	 * <p>{@code public Image getImg(String path)}
 	 * <p>Get image object from its formatted path
-	 * <p>In the formatted form of the path, every file separator
-	 * is replaced by an underscore character, and the extension
-	 * is ignored.
-	 * <h1>Example:</h1>
-	 * <ul>
-	 * <li>{@code resources/img.png} turns to {@code resources_img}</li>
-	 * <li>{@code a\b\c\img.png} turns to {@code a_b_c_img}</li>
-	 * <li>{@code a_b/c_img.jpg} also turns to {@code a_b_c_img}</li>
-	 * </ul>
+	 * <p>In the formatted form of the path, what is
+	 * left is the file name. The folders and file
+	 * extension are ignored.
 	 * @param path - Formatted image path
 	 * @return image object, if stored. Null otherwise.
 	 */
 	public Image getImg(String path) {
 		Image i = imglist.get(formatPath(path));
 		if( i == null )
-			System.out.printf("Image '%s' not found!",path);
+			System.out.printf("Image '%s' not found!\n",path);
 		return i;
 	}
 	
 	private String formatPath(String path) {
 		path = path.replaceAll("\\..*", ""); /* remove extensions */
-		path = path.replaceAll("\\\\|/", "_"); /* even file separators */
+		path = path.replaceAll("(.*\\\\|/)", ""); /* remove path */
 		return path;
 	}
 	
