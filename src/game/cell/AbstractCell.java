@@ -38,7 +38,7 @@ public abstract class AbstractCell {
 	 * @return the amount that will be subtracted from the players' balance
 	 * @see Dice#getLastRollSum() getLastRollSum()
 	 */
-	int charge(Player player, int diceSum) { return 0; }
+	public int charge(Player player, int diceSum) { return 0; }
 	
 	/**
 	 * @return {@code true} if the cell is ownable,
@@ -48,12 +48,12 @@ public abstract class AbstractCell {
 	 * @see OwnableCell
 	 * @see GameCell
 	 */
-	boolean isOwnable() { return isOwnable; }
+	public boolean isOwnable() { return isOwnable; }
 	
 	/**
 	 * @return position of cell in board from starting point
 	 */
-	int getPosition() { return pos; }
+	public int getPosition() { return pos; }
 
 	/**
 	 * @return the name

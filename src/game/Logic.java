@@ -132,6 +132,19 @@ public class Logic {
 	public Player getCurrentPlayer() {
 		return players.get(turn);
 	}
+
+	public String [] getCurrentPlayerCellsNames() {
+		ArrayList<OwnableCell> cells = getCurrentPlayerCells();
+		String [] cellNames = new String[cells.size()];
+		Iterator<OwnableCell> iterator = cells.iterator();
+		int index = 0;
+		while( iterator.hasNext() ) {
+			OwnableCell cell = iterator.next();
+			cellNames[index] = cell.getName();
+			index++;
+		}
+		return cellNames;
+	}
 	
 	/**
 	 * @return number of players on the board currently. If a player
@@ -139,7 +152,7 @@ public class Logic {
 	 * therefore, from this player count method.
 	 */
 	public int getNumPlayers() { return players.size(); }
-	
+		
 	/* *****
 	 * CELLS
 	 * ***** */
@@ -198,7 +211,23 @@ public class Logic {
 	}
 	
 	public void clickedOnCell(int pos) {
-		System.out.printf("You clicked on position %d\n",pos);
+		System.out.printf("You clicked on cell %d\n",pos);
+	}
+	
+	private ArrayList<OwnableCell> getCurrentPlayerCells() {
+		ArrayList<OwnableCell> playerCells = new ArrayList<OwnableCell>();
+		Player player = getCurrentPlayer();
+		for(int i = 0 ; i < numOfCells; i++) {
+			AbstractCell cell = cells[i];
+			if( cell == null ) continue; // TODO: instantiate all cells
+			if( cell.isOwnable() ) {
+				OwnableCell ownableCell = (OwnableCell) cell;
+				if( player.equals(ownableCell.getOwner()) ) {
+					playerCells.add(ownableCell);
+				}
+			}
+		}
+		return playerCells;
 	}
 	
 	/* *************

@@ -46,6 +46,12 @@ public class PropertyDialog extends JDialog {
 		JLabel balanceLabel = new JLabel(String.format("$ %d", balance));
 		if(balance <= 0) balanceLabel.setForeground(Color.RED);
 		
+		String [] cellNames = logic.getCurrentPlayerCellsNames();
+		
+		// TODO: add properties to test
+		for(String cn : cellNames) System.out.println(cn);
+		System.out.println(cellNames.length+" properties");
+		
 		panel.add(nameLabel);
 		panel.add(balanceLabel);
 		

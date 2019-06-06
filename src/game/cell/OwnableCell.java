@@ -88,7 +88,7 @@ public abstract class OwnableCell extends AbstractCell {
 	 * <li><p>Does <b>NOT</b> charge if there is no owner.</li>
 	 * </ul>
 	 */
-	int charge(Player player, int diceSum) {
+	public int charge(Player player, int diceSum) {
 		if( owner == null || player == owner ) return 0;
 		int fee = getChargeValue(player,diceSum);
 		owner.accountTransfer(fee);
