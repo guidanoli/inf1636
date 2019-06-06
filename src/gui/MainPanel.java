@@ -314,6 +314,12 @@ public class MainPanel extends JPanel implements MouseListener {
 				logic.endTurn();
 				repaint();
 			}
+			else if( btnSource == propertyBtn )
+			{
+				JDialog propertyDlg = new PropertyDialog(frame);
+				propertyDlg.pack();
+				propertyDlg.setVisible(true);
+			}
 			
 			updateButtons();
 		}

@@ -47,7 +47,7 @@ public class Logic {
 		new Color(255,23,0) ,
 		new Color(36,98,193) ,
 		new Color(238,133,1) ,
-		new Color(248,233,23) ,
+		new Color(242,181,12) ,
 		new Color(184,0,187) ,
 		new Color(128,116,102)
 	};
@@ -117,6 +117,20 @@ public class Logic {
 	 */
 	public Color getCurrentPlayerColor() {
 		return playerColorIds[turn];
+	}
+	
+	/**
+	 * @return the name of the color of the current turn's player
+	 */
+	public String getCurrentPlayerColorName() {
+		return playerColorNames[turn];
+	}
+		
+	/**
+	 * @return current player object
+	 */
+	public Player getCurrentPlayer() {
+		return players.get(turn);
 	}
 	
 	/**
