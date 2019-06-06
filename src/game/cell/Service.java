@@ -38,4 +38,9 @@ public class Service extends OwnableCell {
 		return diceSum*multiplier;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	protected boolean isUpgradable() { return false; }
+
 }

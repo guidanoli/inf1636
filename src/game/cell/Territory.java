@@ -107,4 +107,9 @@ public class Territory extends OwnableCell {
 		return steppingFees[upgradeLevel];
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	protected boolean isUpgradable() { return true; }
+
 }

@@ -317,8 +317,11 @@ public class MainPanel extends JPanel implements MouseListener {
 			else if( btnSource == propertyBtn )
 			{
 				JDialog propertyDlg = new PropertyDialog(frame);
-				propertyDlg.pack();
 				propertyDlg.setVisible(true);
+			}
+			else if( btnSource == buyBtn )
+			{
+				
 			}
 			
 			updateButtons();

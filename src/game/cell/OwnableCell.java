@@ -73,6 +73,18 @@ public abstract class OwnableCell extends AbstractCell {
 	}
 	
 	/**
+	 * @return {@code true} is cell can be upgraded.
+	 */
+	abstract protected boolean isUpgradable();
+	
+	/**
+	 * @return
+	 */
+	public boolean upgrade() { return isUpgradable(); }
+	
+	public boolean canUpgrade() { return isUpgradable(); }
+	
+	/**
 	 * <p>Derived from the {@link #charge(Player, int)} method.
 	 * @param player - player to be charged (not the owner)
 	 * @param diceSum - the sum of the dice values

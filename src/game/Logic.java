@@ -230,6 +230,10 @@ public class Logic {
 		return playerCells;
 	}
 	
+	private AbstractCell getCurrentPlayerSteppingCell() {
+		return cells[getCurrentPlayer().getPos()];
+	}
+	
 	/* *************
 	 * GAME COMMANDS
 	 * ************* */
@@ -297,11 +301,24 @@ public class Logic {
 	}
 	
 	public boolean canBuy() {
-		return !canRollFlag;
+		if( canRollFlag ) return false; // waiting to roll dice first! 
+		AbstractCell steppingCell = getCurrentPlayerSteppingCell();
+		if( steppingCell == null ) return false; // TODO: implemented all cell types
+		if( !steppingCell.isOwnable() ) return false; // can't be owned
+		OwnableCell ownableCell = (OwnableCell) steppingCell;
+		if( ownableCell.getOwner() != null ) return false; // is already owned (maybe even by the current player itself)
+		int fee = ownableCell.getBuyingFee();
+		return getCurrentPlayer().canAfford(fee); // can the current player afford it?
 	}
 	
 	public boolean canUpgrade() {
-		return !canRollFlag;
+		if( canRollFlag ) return false; // waiting to roll dice first! 
+		AbstractCell steppingCell = getCurrentPlayerSteppingCell();
+		if( steppingCell == null ) return false; // TODO: implemented all cell types
+		if( !steppingCell.isOwnable() ) return false; // game cell!
+		OwnableCell ownableCell = (OwnableCell) steppingCell;
+		if( ownableCell.getOwner() != getCurrentPlayer() ) return false; // not your cell!
+		return ownableCell.canUpgrade(); // can the current player upgrade it?
 	}
 	
 }
