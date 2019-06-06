@@ -37,6 +37,7 @@ public class MainPanel extends JPanel implements MouseListener {
 	private JButton upgradeBtn = new JButton("Construir");
 	private JButton endTurnBtn = new JButton("Terminar turno");
 	private JButton propertyBtn = new JButton("Meu patrimônio");
+	
 	JButton [] btnGrid = {
 			rollBtn ,
 			propertyBtn ,
@@ -321,7 +322,11 @@ public class MainPanel extends JPanel implements MouseListener {
 			}
 			else if( btnSource == buyBtn )
 			{
-				
+				logic.buy();
+			}
+			else if( btnSource == upgradeBtn )
+			{
+				logic.upgrade();
 			}
 			
 			updateButtons();

@@ -73,16 +73,29 @@ public abstract class OwnableCell extends AbstractCell {
 	}
 	
 	/**
-	 * @return {@code true} is cell can be upgraded.
+	 * @return {@code true} is cell can be upgraded. (protected)
 	 */
 	abstract protected boolean isUpgradable();
 	
 	/**
-	 * @return
+	 * @return {@code true} if upgrade was successful
 	 */
 	public boolean upgrade() { return isUpgradable(); }
 	
+	/**
+	 * @return {@code true} if cell can be upgraded.
+	 */
 	public boolean canUpgrade() { return isUpgradable(); }
+	
+	/**
+	 * @return fee charged to upgrade territory by one level
+	 */
+	public int getUpgradingFee() { return 0; }
+	
+	/**
+	 * @return current upgrade level (0 = no upgrade)
+	 */
+	public int getUpgradeLevel() { return 0; }
 	
 	/**
 	 * <p>Derived from the {@link #charge(Player, int)} method.

@@ -1,5 +1,9 @@
 package game.cell;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+
+import game.Logic;
 import game.Player;
 
 /**
@@ -19,7 +23,7 @@ import game.Player;
  *
  */
 public class Territory extends OwnableCell {
-
+	
 	/**
 	 * [0] = ground fee (no upgrade)
 	 * [1..N] = fee with N upgrades
@@ -76,12 +80,37 @@ public class Territory extends OwnableCell {
 	public int getUpgradeLevel() { return upgradeLevel; }
 	
 	/**
-	 * @return {@code true} if can upgrade
+	 * @return <p>{@code true} if:
+	 * <ul>
+	 * <li>all the owner's territories are on the same level</li>
+	 * <li>this very territory isn't on its the maximum upgrade level</li>
+	 * <li>the owner can afford the upgrading fee</li>
+	 * </uL>
 	 * @see #Territory(int, int, int, int, int...) Constructor
 	 */
 	public boolean canUpgrade() {
-		// TODO: check if:
-		// - all its other buildings are on the same level
+		Logic logic = Logic.getInstance();
+		if( getOwner() == null ) return false;
+		int fee = getUpgradingFee();
+		if( !getOwner().canAfford(fee) ) return false;
+		if( logic == null )
+		{
+			System.out.println("logic null!");
+			return false;
+		}
+		ArrayList<OwnableCell> cells = logic.getCurrentPlayerCells();
+		if( cells == null )
+		{
+			System.out.println("cells null!");
+			return false;
+		}
+		int level = getUpgradeLevel();
+		Iterator<OwnableCell> iterator = cells.iterator();
+		while(iterator.hasNext()) {
+			OwnableCell cell = iterator.next();
+			if( !cell.isUpgradable() ) continue;
+			if( cell.getUpgradeLevel() != level ) return false;
+		}
 		return 	upgradeLevel + 1 < steppingFees.length;
 	}
 	

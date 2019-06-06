@@ -214,7 +214,10 @@ public class Logic {
 		System.out.printf("You clicked on cell %d\n",pos);
 	}
 	
-	private ArrayList<OwnableCell> getCurrentPlayerCells() {
+	/**
+	 * @return array of cells owned by current player
+	 */
+	public ArrayList<OwnableCell> getCurrentPlayerCells() {
 		ArrayList<OwnableCell> playerCells = new ArrayList<OwnableCell>();
 		Player player = getCurrentPlayer();
 		for(int i = 0 ; i < numOfCells; i++) {
@@ -222,7 +225,7 @@ public class Logic {
 			if( cell == null ) continue; // TODO: instantiate all cells
 			if( cell.isOwnable() ) {
 				OwnableCell ownableCell = (OwnableCell) cell;
-				if( player.equals(ownableCell.getOwner()) ) {
+				if( player == ownableCell.getOwner() ) {
 					playerCells.add(ownableCell);
 				}
 			}
@@ -244,8 +247,10 @@ public class Logic {
 	 * the final cell may be responsible for.
 	 * <p>Also, takes into account if the player crosses the starting
 	 * point, rewarding him with a monetary bonus.
+	 * <p>This method can only be called if {@link #canRoll()} == true
 	 */
 	public void roll() {
+		if( !canRoll() ) return; // never trust the user
 		canRollFlag = false;
 		dice.roll();
 		Player p = players.get(turn);
@@ -258,12 +263,52 @@ public class Logic {
 	/**
 	 * <p>End current turn and pass to the next, following the order
 	 * as established from the beginning of the game.
+	 * <p>This method can only be called if {@link #canEndTurn()} == true
 	 */
 	public void endTurn() {
+		if( !canEndTurn() ) return; // never trust the user
 		canRollFlag = true;
 		nextTurn();
 	}
 	
+	/**
+	 * <p>Buys currently stepping cell property and assigns its ownership
+	 * to the current turn's player.
+	 * <p>This method can only be called if {@link #canBuy()} == true
+	 */
+	public void buy() {
+		if( !canBuy() ) return; // never trust the user
+		// canBuy() == true guarantees:
+		// - current player stepping cell is ownable cell
+		// - current player can afford the buying fee
+		
+		OwnableCell cell = (OwnableCell) getCurrentPlayerSteppingCell();
+		int fee = cell.getBuyingFee();
+		Player player = getCurrentPlayer();
+		player.accountTransfer(-fee);
+		cell.setOwner(player);
+	}
+	
+	/**
+	 * <p>Upgrades currently stepping cell property by one level IF possible
+	 * <p>This method can only be called if {@link #canUpgrade()} == true
+	 */
+	public void upgrade() {
+		if( !canUpgrade() ) return; // never trust the user
+		// canUpgrade() == true guarantees:
+		// - current player stepping cell is ownable cell and owned by it
+		// - current player can afford the upgrade fee
+		
+		OwnableCell cell = (OwnableCell) getCurrentPlayerSteppingCell();
+		int fee = cell.getUpgradingFee();
+		Player player = getCurrentPlayer();
+		player.accountTransfer(-fee);
+		cell.upgrade();
+	}
+	
+	/**
+	 * <p>Cycles the turn counter to the next player
+	 */
 	private void nextTurn() {
 		turn = (turn+1)%getNumPlayers();
 	}
@@ -292,14 +337,24 @@ public class Logic {
 	 */
 	private boolean canRollFlag = true;
 	
+	/**
+	 * @return {@code true} if dice can be rolled.
+	 */
 	public boolean canRoll() {
 		return canRollFlag;
 	}
 	
+	/**
+	 * @return {@code true} if turn can be ended
+	 */
 	public boolean canEndTurn() {
 		return !canRollFlag;
 	}
 	
+	/**
+	 * @return {@code true} if current turn's player can buy the
+	 * cell it is currently stepping in.
+	 */
 	public boolean canBuy() {
 		if( canRollFlag ) return false; // waiting to roll dice first! 
 		AbstractCell steppingCell = getCurrentPlayerSteppingCell();
@@ -311,6 +366,11 @@ public class Logic {
 		return getCurrentPlayer().canAfford(fee); // can the current player afford it?
 	}
 	
+	/**
+	 * @return {@code true} if current turn's player can upgrade the
+	 * cell it is currently stepping in.
+	 * @see OwnableCell#canUpgrade()
+	 */
 	public boolean canUpgrade() {
 		if( canRollFlag ) return false; // waiting to roll dice first! 
 		AbstractCell steppingCell = getCurrentPlayerSteppingCell();

@@ -13,8 +13,8 @@ import game.Player;
  */
 public abstract class AbstractCell {
 
-	private int pos;
 	private String name;
+	private int pos;
 	private boolean isOwnable;
 	
 	/**
@@ -26,6 +26,7 @@ public abstract class AbstractCell {
 	 * @see OwnableCell
 	 */
 	public AbstractCell(String name, int pos, boolean isOwnable) {
+		this.name = name;
 		this.pos = pos;
 		this.isOwnable = isOwnable;
 	}
