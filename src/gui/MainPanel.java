@@ -36,12 +36,10 @@ public class MainPanel extends JPanel implements MouseListener {
 	private JButton buyBtn = new JButton("Comprar");
 	private JButton upgradeBtn = new JButton("Construir");
 	private JButton endTurnBtn = new JButton("Terminar turno");
-	private JButton showDeckBtn = new JButton("Mostrar deque");
-	private JButton showBalanceBtn = new JButton("Mostrar saldo");
+	private JButton propertyBtn = new JButton("Meu patrimônio");
 	JButton [] btnGrid = {
 			rollBtn ,
-			showDeckBtn ,
-			showBalanceBtn ,
+			propertyBtn ,
 			upgradeBtn ,
 			buyBtn ,
 			endTurnBtn
@@ -105,7 +103,16 @@ public class MainPanel extends JPanel implements MouseListener {
 	
 	private void setAreaListeners()
 	{
-		
+		for(int pos = 0; pos < logic.numOfCells; pos++)
+		{
+			Rectangle cellBounds = getCellFormatAndOffset(pos);
+			final int finalPos = pos;
+			listener.addArea(cellBounds, new AreaMouseListener() {
+				public void action() {
+					logic.clickedOnCell(finalPos);
+				}
+			});
+		}
 	}
 	
 	/* ****
@@ -214,6 +221,17 @@ public class MainPanel extends JPanel implements MouseListener {
 		return rect;
 	}
 	
+	private Rectangle getCellFormatAndOffset(int pos) {
+		Rectangle offset = getCellOffset(pos);
+		Rectangle format = getCellFormat(pos);
+		return new Rectangle(
+			offset.x ,
+			offset.y ,
+			format.width ,
+			format.height
+		);
+	}
+	
 	private Rectangle getCellOffset(int pos) {
 		int x = 7, y = 7;
 		int [] const_coord = {7,7,871,871};
@@ -247,7 +265,7 @@ public class MainPanel extends JPanel implements MouseListener {
 	}
 	
 	private Rectangle getPlayerOffset(int pos, int pId) {
-		Rectangle cellRect = getCellFormatFromPos(pos);
+		Rectangle cellRect = getCellFormat(pos);
 		int row = pId % 3 + 1;
 		int col = pId / 3 + 1;
 		int row_size = cellRect.width / 4;
@@ -257,7 +275,7 @@ public class MainPanel extends JPanel implements MouseListener {
 		return new Rectangle(width,height,0,0);
 	}
 	
-	private Rectangle getCellFormatFromPos(int pos) {
+	private Rectangle getCellFormat(int pos) {
 		if( pos % 9 == 0 )
 			return new Rectangle(longMeasure,longMeasure); /* corner */
 		int side = pos / 9;

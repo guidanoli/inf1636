@@ -183,6 +183,10 @@ public class Logic {
 		}
 	}
 	
+	public void clickedOnCell(int pos) {
+		System.out.printf("You clicked on position %d\n",pos);
+	}
+	
 	/* *************
 	 * GAME COMMANDS
 	 * ************* */
