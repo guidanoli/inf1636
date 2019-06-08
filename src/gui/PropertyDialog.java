@@ -1,10 +1,16 @@
 package gui;
 
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Frame;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.Rectangle;
 
 import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
+import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -29,13 +35,14 @@ public class PropertyDialog extends JDialog {
 	public PropertyDialog(Frame parent) {
 		super(parent,"Meu Patrimônio",true);
 		buildDialog();
-		setLocationRelativeTo(parent);
 		pack();
+		setLocationRelativeTo(parent);
 	}
 	
 	private void buildDialog() {
 		JPanel panel = new JPanel();
-		BoxLayout layout = new BoxLayout(panel,BoxLayout.Y_AXIS);
+		GridBagLayout layout = new GridBagLayout();
+		GridBagConstraints c = new GridBagConstraints();
 		panel.setLayout(layout);
 		int margin = 10;
 		panel.setBorder(BorderFactory.createEmptyBorder(margin, margin, margin, margin));
@@ -46,14 +53,24 @@ public class PropertyDialog extends JDialog {
 		JLabel balanceLabel = new JLabel(String.format("$ %d", balance));
 		if(balance <= 0) balanceLabel.setForeground(Color.RED);
 		
+		JLabel cellComboLabel = new JLabel("Propriedades:");
+		cellComboLabel.setFont(new Font(Font.DIALOG,Font.BOLD,12));
 		String [] cellNames = logic.getCurrentPlayerCellsNames();
+		JComboBox<String> comboBox = new JComboBox<String>(cellNames);
+		if(cellNames.length == 0) comboBox.setPreferredSize(new Dimension(100,25));
 		
-		// TODO: add properties to test
-		for(String cn : cellNames) System.out.println(cn);
-		System.out.println(cellNames.length+" properties");
-		
-		panel.add(nameLabel);
-		panel.add(balanceLabel);
+		c.gridy = 0;
+		c.gridwidth = 2;
+		c.fill = GridBagConstraints.HORIZONTAL;
+		panel.add(nameLabel,c);
+		c.gridy = 1;
+		panel.add(balanceLabel,c);
+		c.insets = new Insets(10,0,0,0);
+		c.gridwidth = 1;
+		c.gridy = 2;
+		panel.add(cellComboLabel,c);
+		c.insets = new Insets(10,10,0,0);
+		panel.add(comboBox,c);
 		
 		rootPane.getContentPane().add(panel);
 	}

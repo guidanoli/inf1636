@@ -12,7 +12,8 @@ public class CSVReader {
 		try (BufferedReader br = new BufferedReader(new FileReader(filepath))) {
 		    String line;
 		    while ((line = br.readLine()) != null) {
-		        String[] values = line.split(",");
+		    	String UTF8 = new String(line.getBytes(),"UTF-8");
+		        String[] values = UTF8.split(",");
 		        for(int i = 0 ; i < values.length; i++)
 		        	if(values[i].equals(""))
 		        		values[i] = null;

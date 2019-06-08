@@ -190,6 +190,7 @@ public class Logic {
 					for(int i = 0 ; i < additionalFees.length; i++)
 						additionalFees[i] = Integer.parseInt(cell.get(i+7));
 				}
+				System.out.println(name);
 				newCell = new Territory(name,
 										pos,
 										Integer.parseInt(cell.get(4)),

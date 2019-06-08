@@ -17,8 +17,9 @@ public class MainFrame extends JFrame {
 		
 	// components
 	// none yet --		
-	public MainFrame(String name, int numOfPlayers) {
+	public MainFrame(String name, int numOfPlayers, ImageIcon icon) {
 		super(name);
+		setIconImage(icon.getImage());
 		setFrameSizeAndPos();
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		p = new MainPanel(this, numOfPlayers);

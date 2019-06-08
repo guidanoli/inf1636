@@ -78,6 +78,8 @@ public abstract class OwnableCell extends AbstractCell {
 	abstract protected boolean isUpgradable();
 	
 	/**
+	 * Upgrades ownable cell by one level, if possible,
+	 * charging the fee automatically from the owner.
 	 * @return {@code true} if upgrade was successful
 	 */
 	public boolean upgrade() { return isUpgradable(); }

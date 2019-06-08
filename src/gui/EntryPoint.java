@@ -14,7 +14,7 @@ public class EntryPoint {
                 "Novo Jogo", JOptionPane.QUESTION_MESSAGE, icon, options, options[0]);
         if (decision==null) return;
         int numOfPlayers = Integer.parseInt(decision);
-		new MainFrame("Banco Imobiliário",numOfPlayers);
+		new MainFrame("Banco Imobiliário",numOfPlayers,icon);
 	}
 	
 }
