@@ -7,7 +7,8 @@ import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.JComboBox;
@@ -24,9 +25,11 @@ import game.Logic;
  *
  */
 @SuppressWarnings("serial")
-public class PropertyDialog extends JDialog {
+public class PropertyDialog extends JDialog implements ActionListener {
 
 	private Logic logic = Logic.getInstance();
+	private JComboBox<String> comboBox;
+	private JLabel imgLabel = new JLabel();
 	
 	/**
 	 * Constructs property dialog relative to parent
@@ -40,25 +43,35 @@ public class PropertyDialog extends JDialog {
 	}
 	
 	private void buildDialog() {
-		JPanel panel = new JPanel();
-		GridBagLayout layout = new GridBagLayout();
-		GridBagConstraints c = new GridBagConstraints();
-		panel.setLayout(layout);
-		int margin = 10;
-		panel.setBorder(BorderFactory.createEmptyBorder(margin, margin, margin, margin));
+		/* Creating panel and margins */
+		JPanel panel = new JPanel(new GridBagLayout());
+		panel.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
 		
+		/* Labels */
 		JLabel nameLabel = new JLabel("Jogador "+logic.getCurrentPlayerColorName());
 		nameLabel.setForeground(logic.getCurrentPlayerColor());
 		int balance = logic.getCurrentPlayer().getBankAcc();
 		JLabel balanceLabel = new JLabel(String.format("$ %d", balance));
 		if(balance <= 0) balanceLabel.setForeground(Color.RED);
 		
+		/* Combo Box */
 		JLabel cellComboLabel = new JLabel("Propriedades:");
 		cellComboLabel.setFont(new Font(Font.DIALOG,Font.BOLD,12));
 		String [] cellNames = logic.getCurrentPlayerCellsNames();
-		JComboBox<String> comboBox = new JComboBox<String>(cellNames);
-		if(cellNames.length == 0) comboBox.setPreferredSize(new Dimension(100,25));
+		comboBox = new JComboBox<String>(cellNames);
+		comboBox.addActionListener(this);
+		if(cellNames.length == 0)
+		{
+			imgLabel.setText("Você não possui propriedades.");
+			comboBox.setPreferredSize(new Dimension(100,25));
+		}
+		else
+		{
+			addImageByCellName(comboBox.getItemAt(0));
+		}
 		
+		/* Adding components with proper formatting */
+		GridBagConstraints c = new GridBagConstraints();
 		c.gridy = 0;
 		c.gridwidth = 2;
 		c.fill = GridBagConstraints.HORIZONTAL;
@@ -72,7 +85,18 @@ public class PropertyDialog extends JDialog {
 		c.insets = new Insets(10,10,0,0);
 		panel.add(comboBox,c);
 		
+		/* Add panel to root pane from dialog */
 		rootPane.getContentPane().add(panel);
 	}
 
+	public void actionPerformed(ActionEvent e) {
+		int index = comboBox.getSelectedIndex();
+		String cellName = comboBox.getItemAt(index);
+		addImageByCellName(cellName);
+	}
+
+	private void addImageByCellName(String name) {
+		
+	}
+	
 }

@@ -1,6 +1,9 @@
 package game.cell;
 
+import java.awt.Image;
+
 import game.Player;
+import io.ImgList;
 
 /**
  * <p>An ownable cell is a cell that can be bought or
@@ -25,15 +28,18 @@ public abstract class OwnableCell extends AbstractCell {
 
 	private Player owner = null;
 	private int buyingFee;
+	private Image cardImage;
 	
 	/**
 	 * <p>Constructs ownable cell
 	 * @param name - name of the cell
 	 * @param pos - position of cell in board from starting point.
 	 */
-	public OwnableCell(String name, int pos, int buyingFee) {
+	public OwnableCell(String name, String imgPath, int pos, int buyingFee) {
 		super(name, pos, true);
 		this.buyingFee = buyingFee;
+		ImgList i = ImgList.getInstance();
+		cardImage = i.addImg(imgPath);
 	}
 	
 	/**
@@ -70,6 +76,10 @@ public abstract class OwnableCell extends AbstractCell {
 		if( !newOwner.accountTransfer(getBuyingFee()) ) return false;
 		setOwner(newOwner);
 		return true;
+	}
+	
+	public Image getCardImage() {
+		return cardImage;
 	}
 	
 	/**

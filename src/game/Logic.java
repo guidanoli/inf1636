@@ -168,6 +168,7 @@ public class Logic {
 			String name = cell.get(1);
 			int type = Integer.parseInt(cell.get(2));
 			AbstractCell newCell = null;
+			String imgName;
 			switch(type) {
 			case 0:
 				// inert cell
@@ -190,8 +191,9 @@ public class Logic {
 					for(int i = 0 ; i < additionalFees.length; i++)
 						additionalFees[i] = Integer.parseInt(cell.get(i+7));
 				}
-				System.out.println(name);
+				imgName = cell.get(3);
 				newCell = new Territory(name,
+										LocalResources.territoriesFolder + imgName + ".jpg",
 										pos,
 										Integer.parseInt(cell.get(4)),
 										Integer.parseInt(cell.get(5)),
@@ -201,7 +203,9 @@ public class Logic {
 			case 5:
 				// service
 				assert(cell.size() == 6);
+				imgName = cell.get(3);
 				newCell = new Service(	name,
+										LocalResources.servicesFolder + imgName + ".jpg",
 										pos,
 										Integer.parseInt(cell.get(4)),
 										Integer.parseInt(cell.get(5)));
