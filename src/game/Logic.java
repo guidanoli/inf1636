@@ -300,9 +300,6 @@ public class Logic {
 		// - current player can afford the upgrade fee
 		
 		OwnableCell cell = (OwnableCell) getCurrentPlayerSteppingCell();
-		int fee = cell.getUpgradingFee();
-		Player player = getCurrentPlayer();
-		player.accountTransfer(-fee);
 		cell.upgrade();
 	}
 	

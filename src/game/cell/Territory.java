@@ -122,7 +122,7 @@ public class Territory extends OwnableCell {
 	 */
 	public boolean upgrade() {
 		if( !canUpgrade() ) return false;
-		if( !getOwner().accountTransfer(getUpgradingFee()) ) return false;
+		if( !getOwner().accountTransfer(-getUpgradingFee()) ) return false;
 		upgradeLevel++;
 		return true;
 	}
