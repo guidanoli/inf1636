@@ -6,17 +6,21 @@ import java.awt.Font;
 import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Image;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import game.Logic;
+import game.cell.AbstractCell;
+import game.cell.OwnableCell;
 
 /**
  * Shows current player properties and bank account balance
@@ -46,6 +50,7 @@ public class PropertyDialog extends JDialog implements ActionListener {
 		/* Creating panel and margins */
 		JPanel panel = new JPanel(new GridBagLayout());
 		panel.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
+		panel.setBackground(Color.WHITE);
 		
 		/* Labels */
 		JLabel nameLabel = new JLabel("Jogador "+logic.getCurrentPlayerColorName());
@@ -72,18 +77,27 @@ public class PropertyDialog extends JDialog implements ActionListener {
 		
 		/* Adding components with proper formatting */
 		GridBagConstraints c = new GridBagConstraints();
-		c.gridy = 0;
-		c.gridwidth = 2;
 		c.fill = GridBagConstraints.HORIZONTAL;
+		c.gridx = 0;
+		c.gridy = 0;
 		panel.add(nameLabel,c);
-		c.gridy = 1;
+		c.insets = new Insets(0,10,0,0);
+		c.gridx = 1;
+		c.gridy = 0;
 		panel.add(balanceLabel,c);
 		c.insets = new Insets(10,0,0,0);
-		c.gridwidth = 1;
-		c.gridy = 2;
+		c.gridx = 0;
+		c.gridy = 1;
 		panel.add(cellComboLabel,c);
 		c.insets = new Insets(10,10,0,0);
+		c.gridx = 1;
+		c.gridy = 1;
 		panel.add(comboBox,c);
+		c.insets = new Insets(10,0,0,0);
+		c.gridx = 0;
+		c.gridy = 2;
+		c.gridwidth = 2;
+		panel.add(imgLabel,c);
 		
 		/* Add panel to root pane from dialog */
 		rootPane.getContentPane().add(panel);
@@ -96,7 +110,20 @@ public class PropertyDialog extends JDialog implements ActionListener {
 	}
 
 	private void addImageByCellName(String name) {
-		
+		AbstractCell cell = logic.getCellByName(name);
+		if( cell instanceof OwnableCell )
+		{
+			OwnableCell ownableCell = (OwnableCell) cell;
+			Image cardImg = ownableCell.getCardImage();
+			int width = cardImg.getWidth(this);
+			int height = cardImg.getHeight(this);
+			int newWidth = 300;
+			int newHeight = (int) ((float)height * ((float)newWidth/(float)width));
+			Image resizedCardImage = cardImg.getScaledInstance(newWidth, newHeight, Image.SCALE_FAST);
+			ImageIcon icon = new ImageIcon(resizedCardImage);
+			imgLabel.setIcon(icon);
+			pack();
+		}
 	}
 	
 }

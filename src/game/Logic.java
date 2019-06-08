@@ -220,6 +220,22 @@ public class Logic {
 	}
 	
 	/**
+	 * @param cellName - cell name detailed in the CSV file
+	 * @return cell object with such name or {@code null} if search was unsuccessful
+	 * @see #getCurrentPlayerCellsNames()
+	 */
+	public AbstractCell getCellByName( String cellName ) {
+		if( cellName == null ) return null;
+		for(int i = 0 ; i < cells.length; i++)
+		{
+			if( cells[i] == null ) continue; // TODO: initialize all cells
+			if( cellName.equals(cells[i].getName()) )
+				return cells[i];
+		}
+		return null;
+	}
+	
+	/**
 	 * @return array of cells owned by current player
 	 */
 	public ArrayList<OwnableCell> getCurrentPlayerCells() {
