@@ -1,12 +1,26 @@
-package game;
+package io;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+/**
+ * The {@code CSVReader} class has the purpose of loading large amounts
+ * of data from CSV files to internal data structures that would be to
+ * unpleasant to be hard coded.
+ * @author guidanoli
+ *
+ */
 public class CSVReader {
 
+	/**
+	 * Reads CSV file and converts to an array of arrays of strings 
+	 * @param filepath - absolute path to CSV file + extension
+	 * @param ignoreFirstRow - in case first row is a header and should not
+	 * be accounted for while parsing CSV data
+	 * @return array of arrays of strings
+	 */
 	public static ArrayList<ArrayList<String>> read(String filepath, boolean ignoreFirstRow) {
 		ArrayList<ArrayList<String>> lines = new ArrayList<ArrayList<String>>();
 		try (BufferedReader br = new BufferedReader(new FileReader(filepath))) {

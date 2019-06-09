@@ -1,10 +1,21 @@
 package game;
 
 import java.awt.Color;
+import java.awt.Frame;
+import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Deque;
 import java.util.Iterator;
 
+import javax.swing.JOptionPane;
+
 import game.cell.*;
+import gui.ImageDialog;
+import io.CSVReader;
 import io.LocalResources;
 
 /**
@@ -22,18 +33,24 @@ public class Logic {
 	// singleton
 	private static final Logic INSTANCE = new Logic(); 
 	
+	// frame output
+	private Frame frame; 
+	
 	// game state
-	protected int turn = 0; // the first player starts the game
+	private int turn = 0; // the first player starts the game
 		
-	// dice
+	// dice - accessible but final
 	public final Dice dice = new Dice(2);
 	
+	// card deck
+	public final Deque<ChanceCard> deck = new ArrayDeque<ChanceCard>();
+	
 	// players
-	protected final int max_player_count = 6;
-	protected ArrayList<Player> players = new ArrayList<Player>();
+	private final int max_player_count = 6;
+	private ArrayList<Player> players = new ArrayList<Player>();
 	
 	// players' color name
-	protected final String [] playerColorNames = { 
+	private final String [] playerColorNames = { 
 		"vermelho" ,
 		"azul" ,
 		"laranja" ,
@@ -43,7 +60,7 @@ public class Logic {
 	};
 	
 	// players' color id
-	protected final Color [] playerColorIds = {
+	private final Color [] playerColorIds = {
 		new Color(255,23,0) ,
 		new Color(36,98,193) ,
 		new Color(238,133,1) ,
@@ -61,6 +78,7 @@ public class Logic {
 	 * ********* */
 	
 	private Logic() {
+		loadDeck();
 		loadCells();
 	}
 
@@ -153,27 +171,125 @@ public class Logic {
 	 */
 	public int getNumPlayers() { return players.size(); }
 		
+	/* ****
+	 * DECK
+	 * **** */
+	
+	private void loadDeck() {
+		String cardsInfoPath = LocalResources.metaFolder + "chance_cards.csv";
+		ArrayList<ArrayList<String>> argList = CSVReader.read(cardsInfoPath, true);
+		Collections.shuffle(argList); // shuffles deck first!
+		Iterator<ArrayList<String>> iterator = argList.iterator();
+		while(iterator.hasNext()) {
+			ArrayList<String> cardInfo = iterator.next();
+			assert(cardInfo.size() >= 2); // bad format!
+			String imagePath = LocalResources.chanceCardsFolder + cardInfo.get(0) + ".jpg";
+			int type = Integer.parseInt(cardInfo.get(1));
+			ActionListener listener = null;
+			int amount;
+			switch(type) {
+			case 0:
+				// misfortune
+				amount = Integer.parseInt(cardInfo.get(2));
+				listener = new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						showCardToScreen();
+						Player player = (Player) e.getSource();
+						player.accountTransfer(-amount);
+					}
+				};
+				break;
+			case 1:
+				// fortune
+				amount = Integer.parseInt(cardInfo.get(2));
+				listener = new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						showCardToScreen();
+						Player player = (Player) e.getSource();
+						player.accountTransfer(amount);
+					}
+				};
+				break;
+			case 2:
+				// go to prison card
+				listener = new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						showCardToScreen();
+						Player player = (Player) e.getSource();
+						if( player.hasCard() )
+						{
+							ChanceCard card = player.takeCard();
+							deck.offerLast(card);
+						}
+						else
+						{
+							sendToPrison(player);
+						}
+					}
+				};
+				break;
+			case 3:
+				// escape prison card
+				listener = new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						showCardToScreen();
+						Player player = (Player) e.getSource();
+						ChanceCard card = deck.pollFirst();
+						player.giveCard(card);
+					}
+				};
+				break;
+			case 4:
+				// fortune (for each player)
+				amount = Integer.parseInt(cardInfo.get(2));
+				listener = new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						showCardToScreen();
+						Player player = (Player) e.getSource();
+						for(Player p : players)
+						{
+							player.accountTransfer(amount);
+							p.accountTransfer(-amount);
+						}
+					}
+				};
+				break;
+			}
+			if(type != 2) continue;
+			deck.offerFirst(new ChanceCard(imagePath, listener));
+		}
+	}
+	
+	private void showCardToScreen() {
+		if( frame == null ) return;
+		ChanceCard card = deck.peekFirst();
+		Image cardImg = card.getCardImage();
+		new ImageDialog(frame, "Sorte ou Revés", cardImg);
+	}
+	
 	/* *****
 	 * CELLS
 	 * ***** */
 	
 	private void loadCells() {
-		String cellInfoPath = LocalResources.metaFolder + "cells_info.csv";
-		ArrayList<ArrayList<String>> argList = CSVReader.read(cellInfoPath, true);
+		String cellsInfoPath = LocalResources.metaFolder + "cells.csv";
+		ArrayList<ArrayList<String>> argList = CSVReader.read(cellsInfoPath, true);
 		Iterator<ArrayList<String>> iterator = argList.iterator();
 		while(iterator.hasNext()) {
-			ArrayList<String> cell = iterator.next();
-			assert(cell.size() >= 3); //bad format!
-			int pos = Integer.parseInt(cell.get(0));
-			String name = cell.get(1);
-			int type = Integer.parseInt(cell.get(2));
-			AbstractCell newCell = null;
+			ArrayList<String> cellInfo = iterator.next();
+			assert(cellInfo.size() >= 3); // bad format!
+			int pos = Integer.parseInt(cellInfo.get(0));
+			String name = cellInfo.get(1);
+			int type = Integer.parseInt(cellInfo.get(2));
+			AbstractCell cell = null;
 			String imgName;
 			switch(type) {
 			case 0:
 				// inert cell
 				break;
 			case 1:
+				cell = new ChanceCell(	name,
+										pos);
 				// chance
 				break;
 			case 2:
@@ -184,34 +300,34 @@ public class Logic {
 				break;
 			case 4:
 				// territory
-				assert(cell.size() >= 7);
+				assert(cellInfo.size() >= 7);
 				int [] additionalFees = null;
-				if( cell.size() > 8 ) {
-					additionalFees = new int[cell.size()-7];
+				if( cellInfo.size() > 8 ) {
+					additionalFees = new int[cellInfo.size()-7];
 					for(int i = 0 ; i < additionalFees.length; i++)
-						additionalFees[i] = Integer.parseInt(cell.get(i+7));
+						additionalFees[i] = Integer.parseInt(cellInfo.get(i+7));
 				}
-				imgName = cell.get(3);
-				newCell = new Territory(name,
+				imgName = cellInfo.get(3);
+				cell = new Territory(	name,
 										LocalResources.territoriesFolder + imgName + ".jpg",
 										pos,
-										Integer.parseInt(cell.get(4)),
-										Integer.parseInt(cell.get(5)),
-										Integer.parseInt(cell.get(6)),
+										Integer.parseInt(cellInfo.get(4)),
+										Integer.parseInt(cellInfo.get(5)),
+										Integer.parseInt(cellInfo.get(6)),
 										additionalFees);
 				break;
 			case 5:
 				// service
-				assert(cell.size() == 6);
-				imgName = cell.get(3);
-				newCell = new Service(	name,
-										LocalResources.servicesFolder + imgName + ".jpg",
-										pos,
-										Integer.parseInt(cell.get(4)),
-										Integer.parseInt(cell.get(5)));
+				assert(cellInfo.size() == 6);
+				imgName = cellInfo.get(3);
+				cell = new Service(	name,
+									LocalResources.servicesFolder + imgName + ".jpg",
+									pos,
+									Integer.parseInt(cellInfo.get(4)),
+									Integer.parseInt(cellInfo.get(5)));
 				break;
 			}
-			cells[pos] = newCell;
+			cells[pos] = cell;
 		}
 	}
 	
@@ -274,11 +390,33 @@ public class Logic {
 		if( !canRoll() ) return; // never trust the user
 		canRollFlag = false;
 		dice.roll();
-		Player p = players.get(turn);
-		int oldPos = p.getPos();
-		int newPos = (oldPos + dice.getLastRollSum())%numOfCells;
-		if( oldPos > newPos ) p.accountTransfer(200); // starting point bonus
-		p.setPos(newPos);
+		Player player = players.get(turn);
+		if( player.isInPrison() )
+		{
+			if( dice.gotEqualSidesUp() )
+			{
+				player.setInPrison(false);
+				JOptionPane.showMessageDialog(	null, "Parabéns! Você conseguiu sair da prisão!",
+												"Prisão", JOptionPane.INFORMATION_MESSAGE);
+			}
+			else
+			{
+				JOptionPane.showMessageDialog(	null, "Não foi dessa vez... Tente na próxima rodada",
+												"Prisão", JOptionPane.INFORMATION_MESSAGE);
+			}
+		}
+		else
+		{
+			int oldPos = player.getPos();
+			int diceSum = dice.getLastRollSum();
+			int newPos = (oldPos + diceSum)%numOfCells;
+			if( oldPos > newPos ) player.accountTransfer(200); // starting point bonus
+			player.setPos(newPos);
+			AbstractCell currentCell = cells[newPos];
+			if(currentCell == null) return; // TODO: implement all cells
+			int money = currentCell.charge(player, diceSum);
+			player.accountTransfer(-money);
+		}
 	}
 	
 	/**
@@ -329,6 +467,15 @@ public class Logic {
 	 */
 	private void nextTurn() {
 		turn = (turn+1)%getNumPlayers();
+	}
+	
+	/**
+	 * Sends player to prison
+	 * @param player
+	 */
+	private void sendToPrison(Player player) {
+		player.setInPrison(true);
+		player.setPos(9);
 	}
 	
 	/* **********************
@@ -398,5 +545,22 @@ public class Logic {
 		if( ownableCell.getOwner() != getCurrentPlayer() ) return false; // not your cell!
 		return ownableCell.canUpgrade(); // can the current player upgrade it?
 	}
+	
+	/* *************
+	 * GUI CALLBACKS
+	 * ************* */
+	
+	/**
+	 * Sets frame to visual call backs
+	 * @param frame - new frame to be set
+	 * @see #getFrame()
+	 */
+	public void setFrame( Frame frame ) { this.frame = frame; }
+	
+	/**
+	 * @return frame for visual call backs
+	 * @see #setFrame(Frame)
+	 */
+	public Frame getFrame() { return frame; }
 	
 }

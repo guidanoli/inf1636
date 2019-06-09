@@ -85,6 +85,19 @@ public class Dice {
 		return sum;
 	}
 
+	/**
+	 * <p><code>public boolean gotEqualSidesUp()</code>
+	 * <p>Checks if all dice from last roll got the same side up
+	 * @return {@code true} if all dice got the same side up
+	 */
+	public boolean gotEqualSidesUp() {
+		int firstResult = lastRoll[0];
+		for(int diceResult : lastRoll)
+			if( diceResult != firstResult )
+				return false;
+		return true;
+	}
+	
 	private int generateRoll() {
 		return Math.abs(new Random().nextInt()%sidesCount) + 1;
 	}

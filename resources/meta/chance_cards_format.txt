@@ -1,0 +1,26 @@
+
+chance_cards.csv is a comma separated values file.
+The header follows:
+
+Imagem | Tipo | Quantia
+
+or 
+
+Image | Type | Amount
+
+********************************************************
+
+Image = name of the card image (without extension)
+
+Type = internal identification for cell type
+
+0 = misfortune (lose amount)
+1 = fortune (earn amount)
+2 = go to prison
+3 = escape prison (storable)
+4 = luck (earn amount for each player)
+
+Amount = for types 0, 1 and 4, represents the amount
+of money earned/lost.
+
+Note that amount is always a positive integer.

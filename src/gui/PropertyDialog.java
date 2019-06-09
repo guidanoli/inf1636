@@ -60,7 +60,7 @@ public class PropertyDialog extends JDialog implements ActionListener {
 		if(balance <= 0) balanceLabel.setForeground(Color.RED);
 		
 		/* Combo Box */
-		JLabel cellComboLabel = new JLabel("Propriedades:");
+		JLabel cellComboLabel = new JLabel("Selecione uma carta:");
 		cellComboLabel.setFont(new Font(Font.DIALOG,Font.BOLD,12));
 		String [] cellNames = logic.getCurrentPlayerCellsNames();
 		comboBox = new JComboBox<String>(cellNames);

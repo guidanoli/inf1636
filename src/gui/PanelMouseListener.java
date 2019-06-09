@@ -24,7 +24,7 @@ import java.util.ArrayList;
 public class PanelMouseListener extends MouseAdapter {
 	
 	protected ArrayList<Rectangle> areas = new ArrayList<Rectangle>();
-	protected ArrayList<AreaMouseListener> listeners = new ArrayList<AreaMouseListener>();
+	protected ArrayList<ActionListener> listeners = new ArrayList<ActionListener>();
 	
 	/**
 	 * <p>{@code public void addArea( Rectangle rectangle , AreaMouseListener listener )}
@@ -34,7 +34,7 @@ public class PanelMouseListener extends MouseAdapter {
 	 * @param rectangle - rectangle object containing boundary information (x, y, width, height)
 	 * @param listener - mouse event listener concerning said area
 	 */
-	public void addArea( Rectangle rectangle , AreaMouseListener listener ) {
+	public void addArea( Rectangle rectangle , ActionListener listener ) {
 		if( rectangle == null || listener == null ) return;
 		areas.add(rectangle);
 		listeners.add(listener);
@@ -45,7 +45,7 @@ public class PanelMouseListener extends MouseAdapter {
 		for( Rectangle area : areas ) {
 			if( area.contains(e.getPoint()) ) {
 				int index = areas.indexOf(area);
-				listeners.get(index).action();
+				listeners.get(index).actionPerformed(new ActionEvent(area,0,"Clicked"));
 			}
 		}
 	}

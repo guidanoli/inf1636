@@ -14,13 +14,13 @@ import java.awt.Color;
  *
  */
 public class Player {
-
-	protected static int count = 0;
 	
-	protected int id;
-	protected int pos = 0;
-	protected Color color;
-	protected int bankAcc = 2458;
+	private boolean isInPrison = false;
+	private ChanceCard card = null;
+	
+	private int pos = 0;
+	private Color color;
+	private int bankAcc = 2458;
 	
 	/**
 	 * Constructs a player
@@ -28,12 +28,11 @@ public class Player {
 	 */
 	public Player(Color color) {
 		this.color = color;
-		this.id = count;
-		Player.count ++;
 	}
 	
 	/**
 	 * @return position of player from the starting point
+	 * @see #setPos(int)
 	 */
 	public int getPos() {
 		return pos;
@@ -41,6 +40,7 @@ public class Player {
 	
 	/**
 	 * @param pos - position of player from the starting point
+	 * @see #getPos()
 	 */
 	public void setPos(int pos) {
 		this.pos = pos;
@@ -55,6 +55,9 @@ public class Player {
 	
 	/**
 	 * @return bank account
+	 * @see #accountTransfer(int)
+	 * @see #canAfford(int)
+	 * @see #isBroke()
 	 */
 	public int getBankAcc() {
 		return bankAcc;
@@ -75,10 +78,12 @@ public class Player {
 	 * @return {@code true} if player would be
 	 * broke after transfer.
 	 * @see #canAfford(int)
+	 * @see #getBankAcc()
+	 * @see #isBroke()
 	 */
 	public boolean accountTransfer(int delta) {
 		if( !canAfford(delta) ) return false;
-		this.bankAcc = this.bankAcc + delta;
+		this.bankAcc = getBankAcc() + delta;
 		return true;
 	}
 	
@@ -99,9 +104,60 @@ public class Player {
 	}
 	
 	/**
-	 * @return {@true} if player is broke and
+	 * @return {@code true} if player is broke and
 	 * should be removed from the game.
 	 */
 	public boolean isBroke() { return bankAcc < 0; }
+	
+	/**
+	 * @return {@code true} if player has got a
+	 * escape prison card
+	 * @see #giveCard(ChanceCard)
+	 * @see #takeCard()
+	 */
+	public boolean hasCard() { return card != null; }
+	
+	/**
+	 * <p>Takes escape prison card from player and
+	 * returns to be inserted again on deck 
+	 * @return escape prison card
+	 * @see #giveCard(ChanceCard)
+	 * @see Player#hasCard()
+	 */
+	public ChanceCard takeCard() {
+		ChanceCard temp = card;
+		this.card = null;
+		return temp;
+	}
+	
+	/**
+	 * <p>Gives escape prison card to player
+	 * <p><b><i>It has to be assured that it got
+	 * removed from the deck so there is not
+	 * duplicate!!</i></b>
+	 * @param card - escape prison card
+	 * @see #takeCard()
+	 * @see #hasCard()
+	 */
+	public void giveCard( ChanceCard card ) {
+		if( card == null ) return;
+		this.card = card;
+	}
+	
+	/**
+	 * @param inPrison - {@code true} if in prison
+	 * @see #isInPrison()
+	 */
+	public void setInPrison( boolean inPrison ) {
+		isInPrison = inPrison;
+	}
+	
+	/**
+	 * @return {@code true} if in prison
+	 * @see #setInPrison(boolean)
+	 */
+	public boolean isInPrison() {
+		return isInPrison;
+	}
 	
 }

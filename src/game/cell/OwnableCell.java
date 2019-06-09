@@ -47,9 +47,7 @@ public abstract class OwnableCell extends AbstractCell {
 	 * @param newOwner - new owner or {@code null} if current
 	 * owner goes bankrupt and leaves the board.
 	 */
-	public void setOwner(Player newOwner) {
-		owner = newOwner;
-	}
+	public void setOwner(Player newOwner) { owner = newOwner; }
 	
 	/**
 	 * <p>Gets owner of cell.
@@ -78,9 +76,10 @@ public abstract class OwnableCell extends AbstractCell {
 		return true;
 	}
 	
-	public Image getCardImage() {
-		return cardImage;
-	}
+	/**
+	 * @return card image object
+	 */
+	public Image getCardImage() { return cardImage; }
 	
 	/**
 	 * @return {@code true} is cell can be upgraded. (protected)
