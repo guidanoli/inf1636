@@ -1,10 +1,22 @@
 package game;
 
 import java.awt.Color;
+import java.awt.Frame;
+import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Deque;
 import java.util.Iterator;
 
+import javax.swing.JOptionPane;
+
 import game.cell.*;
+import gui.ImageDialog;
+import gui.PropertyDialog;
+import io.CSVReader;
 import io.LocalResources;
 
 /**
@@ -22,18 +34,24 @@ public class Logic {
 	// singleton
 	private static final Logic INSTANCE = new Logic(); 
 	
+	// frame output
+	private Frame frame; 
+	
 	// game state
-	protected int turn = 0; // the first player starts the game
+	private int turn = 0; // the first player starts the game
 		
-	// dice
+	// dice - accessible but final
 	public final Dice dice = new Dice(2);
 	
+	// card deck
+	public final Deque<ChanceCard> deck = new ArrayDeque<ChanceCard>();
+	
 	// players
-	protected final int max_player_count = 6;
-	protected ArrayList<Player> players = new ArrayList<Player>();
+	private final int max_player_count = 6;
+	private ArrayList<Player> players = new ArrayList<Player>();
 	
 	// players' color name
-	protected final String [] playerColorNames = { 
+	private final String [] playerColorNames = { 
 		"vermelho" ,
 		"azul" ,
 		"laranja" ,
@@ -43,7 +61,7 @@ public class Logic {
 	};
 	
 	// players' color id
-	protected final Color [] playerColorIds = {
+	private final Color [] playerColorIds = {
 		new Color(255,23,0) ,
 		new Color(36,98,193) ,
 		new Color(238,133,1) ,
@@ -53,6 +71,7 @@ public class Logic {
 	};
 	
 	// cells
+	public final float sellingPercentage = 0.9f;
 	public final int numOfCells = 36; 
 	private AbstractCell [] cells = new AbstractCell[numOfCells];
 	
@@ -61,6 +80,7 @@ public class Logic {
 	 * ********* */
 	
 	private Logic() {
+		loadDeck();
 		loadCells();
 	}
 
@@ -133,6 +153,9 @@ public class Logic {
 		return players.get(turn);
 	}
 
+	/**
+	 * @return array of all the current player's owned cells' names
+	 */
 	public String [] getCurrentPlayerCellsNames() {
 		ArrayList<OwnableCell> cells = getCurrentPlayerCells();
 		String [] cellNames = new String[cells.size()];
@@ -147,71 +170,246 @@ public class Logic {
 	}
 	
 	/**
+	 * Sums player's fortunes, accounting for bank account and
+	 * each of its owned cells' values
+	 * @param player
+	 * @return fortune sum
+	 * @see OwnableCell#getWorthValue() getWorthValue()
+	 */
+	public int getPlayerFortuneSum(Player player) {
+		int sum = player.getBankAcc();
+		ArrayList<OwnableCell> cells = getCurrentPlayerCells();
+		for( OwnableCell cell : cells ) sum += cell.getWorthValue();
+		return sum;
+	}
+	
+	private void removeCurrentPlayer() {
+		Player currentPlayer = getCurrentPlayer();
+		ArrayList<OwnableCell> ownedCells = getCurrentPlayerCells();
+		for( OwnableCell cell : ownedCells ) cell.setOwner(null);
+		if( currentPlayer.hasCard() )
+		{
+			ChanceCard card = currentPlayer.takeCard();
+			deck.offerLast(card);
+		}
+		players.remove(currentPlayer);
+		updateTurn();
+		if( players.size() == 1 )
+		{
+			Frame outputFrame = getFrame();
+			if( outputFrame != null )
+			{
+				JOptionPane.showMessageDialog(outputFrame,
+				String.format("Jogador %s ganhou!",getCurrentPlayerColorName()),
+				"Vitória", JOptionPane.INFORMATION_MESSAGE);
+			}
+			System.exit(0);
+		}
+	}
+	
+	/**
 	 * @return number of players on the board currently. If a player
 	 * has gone bankrupt, it will be removed from the board, and,
 	 * therefore, from this player count method.
 	 */
 	public int getNumPlayers() { return players.size(); }
 		
+	/* ****
+	 * DECK
+	 * **** */
+	
+	private void loadDeck() {
+		String cardsInfoPath = LocalResources.metaFolder + "chance_cards.csv";
+		ArrayList<ArrayList<String>> argList = CSVReader.read(cardsInfoPath, true);
+		Collections.shuffle(argList); // shuffles deck first!
+		Iterator<ArrayList<String>> iterator = argList.iterator();
+		while(iterator.hasNext()) {
+			ArrayList<String> cardInfo = iterator.next();
+			assert(cardInfo.size() >= 2); // bad format!
+			String imagePath = LocalResources.chanceCardsFolder + cardInfo.get(0) + ".jpg";
+			int type = Integer.parseInt(cardInfo.get(1));
+			ActionListener listener = null;
+			int amount;
+			switch(type) {
+			case 0:
+				// misfortune
+				amount = Integer.parseInt(cardInfo.get(2));
+				listener = new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						showCardToScreen();
+						Player player = (Player) e.getSource();
+						player.accountTransfer(-amount);
+					}
+				};
+				break;
+			case 1:
+				// fortune
+				amount = Integer.parseInt(cardInfo.get(2));
+				listener = new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						showCardToScreen();
+						Player player = (Player) e.getSource();
+						player.accountTransfer(amount);
+					}
+				};
+				break;
+			case 2:
+				// go to prison card
+				listener = new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						showCardToScreen();
+						Player player = (Player) e.getSource();
+						if( player.hasCard() )
+						{
+							ChanceCard card = player.takeCard();
+							deck.offerLast(card);
+						}
+						else
+						{
+							sendToPrison(player);
+						}
+					}
+				};
+				break;
+			case 3:
+				// escape prison card
+				listener = new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						showCardToScreen();
+						Player player = (Player) e.getSource();
+						ChanceCard card = deck.pollFirst();
+						player.giveCard(card);
+					}
+				};
+				break;
+			case 4:
+				// fortune (for each player)
+				amount = Integer.parseInt(cardInfo.get(2));
+				listener = new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						showCardToScreen();
+						Player player = (Player) e.getSource();
+						for(Player p : players)
+						{
+							player.accountTransfer(amount);
+							p.accountTransfer(-amount);
+						}
+					}
+				};
+				break;
+			}
+			deck.offerFirst(new ChanceCard(imagePath, listener));
+		}
+	}
+	
+	private void showCardToScreen() {
+		if( frame == null ) return;
+		ChanceCard card = deck.peekFirst();
+		Image cardImg = card.getCardImage();
+		new ImageDialog(frame, "Sorte ou Revés", cardImg);
+	}
+	
 	/* *****
 	 * CELLS
 	 * ***** */
 	
 	private void loadCells() {
-		String cellInfoPath = LocalResources.metaFolder + "cells_info.csv";
-		ArrayList<ArrayList<String>> argList = CSVReader.read(cellInfoPath, true);
+		String cellsInfoPath = LocalResources.metaFolder + "cells.csv";
+		ArrayList<ArrayList<String>> argList = CSVReader.read(cellsInfoPath, true);
 		Iterator<ArrayList<String>> iterator = argList.iterator();
 		while(iterator.hasNext()) {
-			ArrayList<String> cell = iterator.next();
-			assert(cell.size() >= 3); //bad format!
-			int pos = Integer.parseInt(cell.get(0));
-			String name = cell.get(1);
-			int type = Integer.parseInt(cell.get(2));
-			AbstractCell newCell = null;
+			ArrayList<String> cellInfo = iterator.next();
+			assert(cellInfo.size() >= 3); // bad format!
+			int pos = Integer.parseInt(cellInfo.get(0));
+			String name = cellInfo.get(1);
+			int type = Integer.parseInt(cellInfo.get(2));
+			AbstractCell cell = null;
+			String imgName;
 			switch(type) {
 			case 0:
 				// inert cell
+				cell = new GameCell(	name,
+										pos		);
 				break;
 			case 1:
+				cell = new ChanceCell(	name,
+										pos	);
 				// chance
 				break;
 			case 2:
 				// go to prison
+				cell = new ActionCell ( name,
+										pos,
+										new ActionListener() {
+											public void actionPerformed(ActionEvent e) {
+												Logic logic = Logic.getInstance();
+												Player player = (Player) e.getSource();
+												logic.sendToPrison(player);
+											}
+										});
 				break;
 			case 3:
 				// transaction cell
+				int amount = Integer.parseInt(cellInfo.get(4));
+				cell = new ActionCell ( name,
+										pos,
+										new ActionListener() {
+											public void actionPerformed(ActionEvent e) {
+												Player player = (Player) e.getSource();
+												player.accountTransfer(amount);
+											}
+										});
 				break;
 			case 4:
 				// territory
-				assert(cell.size() >= 7);
+				assert(cellInfo.size() >= 7);
 				int [] additionalFees = null;
-				if( cell.size() > 8 ) {
-					additionalFees = new int[cell.size()-7];
+				if( cellInfo.size() > 8 ) {
+					additionalFees = new int[cellInfo.size()-7];
 					for(int i = 0 ; i < additionalFees.length; i++)
-						additionalFees[i] = Integer.parseInt(cell.get(i+7));
+						additionalFees[i] = Integer.parseInt(cellInfo.get(i+7));
 				}
-				newCell = new Territory(name,
+				imgName = cellInfo.get(3);
+				cell = new Territory(	name,
+										LocalResources.territoriesFolder + imgName + ".jpg",
 										pos,
-										Integer.parseInt(cell.get(4)),
-										Integer.parseInt(cell.get(5)),
-										Integer.parseInt(cell.get(6)),
-										additionalFees);
+										Integer.parseInt(cellInfo.get(4)),
+										Integer.parseInt(cellInfo.get(5)),
+										Integer.parseInt(cellInfo.get(6)),
+										additionalFees	);
 				break;
 			case 5:
 				// service
-				assert(cell.size() == 6);
-				newCell = new Service(	name,
-										pos,
-										Integer.parseInt(cell.get(4)),
-										Integer.parseInt(cell.get(5)));
+				assert(cellInfo.size() == 6);
+				imgName = cellInfo.get(3);
+				cell = new Service(	name,
+									LocalResources.servicesFolder + imgName + ".jpg",
+									pos,
+									Integer.parseInt(cellInfo.get(4)),
+									Integer.parseInt(cellInfo.get(5))	);
 				break;
 			}
-			cells[pos] = newCell;
+			cells[pos] = cell;
 		}
 	}
 	
 	public void clickedOnCell(int pos) {
 		System.out.printf("You clicked on cell %d\n",pos);
+	}
+	
+	/**
+	 * @param cellName - cell name detailed in the CSV file
+	 * @return cell object with such name or {@code null} if search was unsuccessful
+	 * @see #getCurrentPlayerCellsNames()
+	 */
+	public AbstractCell getCellByName( String cellName ) {
+		if( cellName == null ) return null;
+		for(int i = 0 ; i < cells.length; i++)
+		{
+			if( cellName.equals(cells[i].getName()) )
+				return cells[i];
+		}
+		return null;
 	}
 	
 	/**
@@ -222,7 +420,6 @@ public class Logic {
 		Player player = getCurrentPlayer();
 		for(int i = 0 ; i < numOfCells; i++) {
 			AbstractCell cell = cells[i];
-			if( cell == null ) continue; // TODO: instantiate all cells
 			if( cell.isOwnable() ) {
 				OwnableCell ownableCell = (OwnableCell) cell;
 				if( player == ownableCell.getOwner() ) {
@@ -253,11 +450,33 @@ public class Logic {
 		if( !canRoll() ) return; // never trust the user
 		canRollFlag = false;
 		dice.roll();
-		Player p = players.get(turn);
-		int oldPos = p.getPos();
-		int newPos = (oldPos + dice.getLastRollSum())%numOfCells;
-		if( oldPos > newPos ) p.accountTransfer(200); // starting point bonus
-		p.setPos(newPos);
+		Player player = players.get(turn);
+		if( player.isInPrison() )
+		{
+			if( dice.gotEqualSidesUp() )
+			{
+				player.setInPrison(false);
+				JOptionPane.showMessageDialog(	null, "Parabéns! Você conseguiu sair da prisão!",
+												"Prisão", JOptionPane.INFORMATION_MESSAGE);
+			}
+			else
+			{
+				player.updateRoundsInPrisonCounter();
+				JOptionPane.showMessageDialog(	null, "Não foi dessa vez... Tente na próxima rodada",
+												"Prisão", JOptionPane.INFORMATION_MESSAGE);
+			}
+		}
+		else
+		{
+			int oldPos = player.getPos();
+			int diceSum = dice.getLastRollSum();
+			int newPos = (oldPos + diceSum)%numOfCells;
+			if( oldPos > newPos ) player.accountTransfer(200); // starting point bonus
+			player.setPos(newPos);
+			AbstractCell currentCell = cells[newPos];
+			int money = currentCell.charge(player, diceSum);
+			player.accountTransfer(-money);
+		}
 	}
 	
 	/**
@@ -269,6 +488,7 @@ public class Logic {
 		if( !canEndTurn() ) return; // never trust the user
 		canRollFlag = true;
 		nextTurn();
+		checkDebt();
 	}
 	
 	/**
@@ -300,9 +520,6 @@ public class Logic {
 		// - current player can afford the upgrade fee
 		
 		OwnableCell cell = (OwnableCell) getCurrentPlayerSteppingCell();
-		int fee = cell.getUpgradingFee();
-		Player player = getCurrentPlayer();
-		player.accountTransfer(-fee);
 		cell.upgrade();
 	}
 	
@@ -310,9 +527,80 @@ public class Logic {
 	 * <p>Cycles the turn counter to the next player
 	 */
 	private void nextTurn() {
-		turn = (turn+1)%getNumPlayers();
+		turn += 1;
+		updateTurn();
 	}
 	
+	/**
+	 * <p>Caps turn counter to current number of players.
+	 * It is useful when removing players and making sure
+	 * the turn counter is within the boundaries of the
+	 * current number of players count (that has been
+	 * recently updated).
+	 */
+	private void updateTurn() { 
+		turn %= getNumPlayers();
+	}
+	
+	/**
+	 * Sends player to prison
+	 * @param player
+	 */
+	private void sendToPrison(Player player) {
+		player.setInPrison(true);
+		player.setPos(9);
+	}
+	
+	/**
+	 * <p>Checks if the current turn's player is on debt
+	 * with the bank. If so, it will prompt a dialog
+	 * that will oblige him to sell as many properties
+	 * as necessary to be on green again. If the sum
+	 * of all the players' fortunes isn't enough to
+	 * pay the debt, it will be automatically removed
+	 * from the player pool.
+	 */
+	private void checkDebt() {
+		Player player = getCurrentPlayer();
+		if( !player.isBroke() ) return; // isn't broke
+		int totalWorth = getPlayerFortuneSum(player);
+		Frame outputFrame = getFrame();
+		if( totalWorth < 0 )
+		{
+			// can't pay
+			if( outputFrame != null )
+			{
+				JOptionPane.showMessageDialog( outputFrame,
+				String.format("O jogador %s faliu. Seu patrimônio foi vendido e poderá ser comprado pelos seus adversários.",getCurrentPlayerColorName()),
+				"Falência", JOptionPane.WARNING_MESSAGE);
+			}
+			removeCurrentPlayer();
+		}
+		else
+		{
+			// can pay
+			if( outputFrame != null )
+			{
+				// ask which properties are to be sold
+				JOptionPane.showMessageDialog( outputFrame,
+				String.format("O jogador %s está devendo $ %d ao banco. Preste suas contas com o banco, vendendo propriedades!",getCurrentPlayerColorName(),-player.getBankAcc()),
+				"Dívidas", JOptionPane.WARNING_MESSAGE);
+				PropertyDialog dlg = new PropertyDialog(getFrame());
+				dlg.setVisible(true);
+			}
+			else
+			{
+				// sell as few properties as possible to pay debt
+				ArrayList<OwnableCell> cells = getCurrentPlayerCells();
+				for( OwnableCell cell : cells )
+				{
+					if( !player.isBroke() ) break;
+					cell.sell();
+				}
+			}
+		}
+	}
+		
 	/* **********************
 	 * GUI BUTTONS ACTIVENESS
 	 * ********************** */
@@ -358,7 +646,6 @@ public class Logic {
 	public boolean canBuy() {
 		if( canRollFlag ) return false; // waiting to roll dice first! 
 		AbstractCell steppingCell = getCurrentPlayerSteppingCell();
-		if( steppingCell == null ) return false; // TODO: implemented all cell types
 		if( !steppingCell.isOwnable() ) return false; // can't be owned
 		OwnableCell ownableCell = (OwnableCell) steppingCell;
 		if( ownableCell.getOwner() != null ) return false; // is already owned (maybe even by the current player itself)
@@ -374,11 +661,33 @@ public class Logic {
 	public boolean canUpgrade() {
 		if( canRollFlag ) return false; // waiting to roll dice first! 
 		AbstractCell steppingCell = getCurrentPlayerSteppingCell();
-		if( steppingCell == null ) return false; // TODO: implemented all cell types
 		if( !steppingCell.isOwnable() ) return false; // game cell!
 		OwnableCell ownableCell = (OwnableCell) steppingCell;
 		if( ownableCell.getOwner() != getCurrentPlayer() ) return false; // not your cell!
 		return ownableCell.canUpgrade(); // can the current player upgrade it?
 	}
+	
+	/* *************
+	 * GUI CALLBACKS
+	 * ************* */
+	
+	/**
+	 * Sets frame from which dialogs can be constructed.
+	 * @param frame - a Frame that is visible to the user and
+	 * which it can be interacted with
+	 * @see #getFrame()
+	 */
+	public void setFrame( Frame frame ) { this.frame = frame; }
+	
+	/**
+	 * <p>Assures there is a GUI frame that the user can
+	 * interact with. If there isn't, that is, if this
+	 * function returns {@code null}, then the user cannot
+	 * interact with any GUI whatsoever. Therefore, some
+	 * decisions have to be made automatically.  
+	 * @return frame for visual call backs
+	 * @see #setFrame(Frame)
+	 */
+	public Frame getFrame() { return frame; }
 	
 }

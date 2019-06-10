@@ -37,7 +37,7 @@ public class ImgList {
 	 * <p>Tries to load an image object through the given path and
 	 * store it on the map with the path as its key.
 	 * <p>It should be used as such:
-	 * <p>{@code ImgList imgList = new ImageList();}<br>
+	 * <p>{@code ImgList imgList = ImageList.getInstance();}<br>
 	 * {@code Image i = imgList.addImg("resources/img.png");}</p>
 	 * @param path - Image absolute path
 	 * @return Loaded image object
@@ -54,7 +54,7 @@ public class ImgList {
 			return i;
 		}
 		catch(IOException e) {
-			System.out.println(e.getMessage());
+			System.out.println(e.getMessage()+" Got '"+path+"'.");
 			System.exit(1);
 			return null;
 		}

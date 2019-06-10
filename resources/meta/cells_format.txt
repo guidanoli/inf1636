@@ -1,5 +1,5 @@
 
-cells_info.csv is a comma separated values file.
+cells.csv is a comma separated values file.
 The header follows:
 
 Posição | Nome | Tipo | 1..Nº Argumento

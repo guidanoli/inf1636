@@ -2,6 +2,8 @@ package gui;
 import javax.swing.*;
 
 import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
@@ -108,8 +110,8 @@ public class MainPanel extends JPanel implements MouseListener {
 		{
 			Rectangle cellBounds = getCellFormatAndOffset(pos);
 			final int finalPos = pos;
-			listener.addArea(cellBounds, new AreaMouseListener() {
-				public void action() {
+			listener.addArea(cellBounds, new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
 					logic.clickedOnCell(finalPos);
 				}
 			});

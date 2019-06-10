@@ -8,7 +8,7 @@ package game.cell;
  * @author guidanoli
  * @see OwnableCell
  */
-public abstract class GameCell extends AbstractCell {
+public class GameCell extends AbstractCell {
 
 	/**
 	 * <p>Constructs a game cell

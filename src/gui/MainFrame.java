@@ -1,5 +1,8 @@
 package gui;
 import javax.swing.*;
+
+import game.Logic;
+
 import java.awt.*;
 
 @SuppressWarnings("serial")
@@ -16,9 +19,15 @@ public class MainFrame extends JFrame {
 	JPanel p;
 		
 	// components
+	
+	// managers
+	Logic logic = Logic.getInstance();
+	
 	// none yet --		
-	public MainFrame(String name, int numOfPlayers) {
+	public MainFrame(String name, int numOfPlayers, ImageIcon icon) {
 		super(name);
+		logic.setFrame(this);
+		setIconImage(icon.getImage());
 		setFrameSizeAndPos();
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		p = new MainPanel(this, numOfPlayers);

@@ -18,6 +18,7 @@ public class Service extends OwnableCell {
 	/**
 	 * Constructs a service cell
 	 * @param name - name of the cell
+	 * @param imgPath - path of image file of card
 	 * @param pos - position of cell in board from starting point.
 	 * @param buyingFee - fee charged from the new owner in the
 	 * moment of buying it.
@@ -25,8 +26,8 @@ public class Service extends OwnableCell {
 	 * money charged from the player that steps on this cell based
 	 * on the sum of the dice values on its turn
 	 */
-	public Service(String name, int pos, int buyingFee, int multiplier) {
-		super(name, pos,buyingFee);
+	public Service(String name, String imgPath, int pos, int buyingFee, int multiplier) {
+		super(name,imgPath,pos,buyingFee);
 		this.multiplier = multiplier;
 	}
 	
