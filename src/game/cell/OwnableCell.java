@@ -2,6 +2,7 @@ package game.cell;
 
 import java.awt.Image;
 
+import game.Logic;
 import game.Player;
 import io.ImgList;
 
@@ -71,7 +72,9 @@ public abstract class OwnableCell extends AbstractCell {
 	 */
 	public boolean buy(Player newOwner) {
 		if( getOwner() != null ) return false;
-		if( !newOwner.accountTransfer(getBuyingFee()) ) return false;
+		int fee = getBuyingFee();
+		if( !newOwner.canAfford(fee) ) return false;
+		newOwner.accountTransfer(-fee);
 		setOwner(newOwner);
 		return true;
 	}
@@ -109,6 +112,14 @@ public abstract class OwnableCell extends AbstractCell {
 	public int getUpgradeLevel() { return 0; }
 	
 	/**
+	 * @return current upgrade level formatted to a string
+	 * If not an upgradable cell, then {@code null} is returned.
+	 */
+	public String getUpgradeLevelString() {
+		return isUpgradable() ? Integer.toString(getUpgradeLevel()) : null;
+	}
+	
+	/**
 	 * <p>Derived from the {@link #charge(Player, int)} method.
 	 * @param player - player to be charged (not the owner)
 	 * @param diceSum - the sum of the dice values
@@ -130,5 +141,37 @@ public abstract class OwnableCell extends AbstractCell {
 		owner.accountTransfer(fee);
 		return fee;
 	}
+	
+	/**
+	 * <p>Accounts for the buying fee and the upgrading fee(s)
+	 * necessary to level to the current cell state.
+	 * <p>For example:
+	 * <ul>
+	 * <li>if the cell hasn't been upgraded yet,
+	 * it will be worth exactly its buying fee.</li>
+	 * <li>On the other side of the spectrum, if a cell has been
+	 * fully upgraded, it will be equal to the buying fee plus
+	 * each upgrade fee.</li>
+	 * </ul>
+	 * @return the total value the cell is worth
+	 */
+	public int getWorthValue() {
+		return getBuyingFee() + getUpgradeLevel()*getUpgradingFee();
+	}
+	
+	/**
+	 * <p>Sells the property for a percentage determined by
+	 * the Logic module. The cell will then no longer be of
+	 * possession of this player and now is open to ownership
+	 * again, just like in the beginning of the game.
+	 */
+	public void sell() {
+		Player owner = getOwner();
+		if( owner == null ) return;
+		int worth = getWorthValue();
+		float percentage = Logic.getInstance().sellingPercentage;
+		owner.accountTransfer((int) (worth*percentage));
+		setOwner(null);
+ 	}
 	
 }

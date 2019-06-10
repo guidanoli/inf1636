@@ -15,6 +15,7 @@ import javax.swing.JOptionPane;
 
 import game.cell.*;
 import gui.ImageDialog;
+import gui.PropertyDialog;
 import io.CSVReader;
 import io.LocalResources;
 
@@ -70,6 +71,7 @@ public class Logic {
 	};
 	
 	// cells
+	public final float sellingPercentage = 0.9f;
 	public final int numOfCells = 36; 
 	private AbstractCell [] cells = new AbstractCell[numOfCells];
 	
@@ -151,6 +153,9 @@ public class Logic {
 		return players.get(turn);
 	}
 
+	/**
+	 * @return array of all the current player's owned cells' names
+	 */
 	public String [] getCurrentPlayerCellsNames() {
 		ArrayList<OwnableCell> cells = getCurrentPlayerCells();
 		String [] cellNames = new String[cells.size()];
@@ -162,6 +167,44 @@ public class Logic {
 			index++;
 		}
 		return cellNames;
+	}
+	
+	/**
+	 * Sums player's fortunes, accounting for bank account and
+	 * each of its owned cells' values
+	 * @param player
+	 * @return fortune sum
+	 * @see OwnableCell#getWorthValue() getWorthValue()
+	 */
+	public int getPlayerFortuneSum(Player player) {
+		int sum = player.getBankAcc();
+		ArrayList<OwnableCell> cells = getCurrentPlayerCells();
+		for( OwnableCell cell : cells ) sum += cell.getWorthValue();
+		return sum;
+	}
+	
+	private void removeCurrentPlayer() {
+		Player currentPlayer = getCurrentPlayer();
+		ArrayList<OwnableCell> ownedCells = getCurrentPlayerCells();
+		for( OwnableCell cell : ownedCells ) cell.setOwner(null);
+		if( currentPlayer.hasCard() )
+		{
+			ChanceCard card = currentPlayer.takeCard();
+			deck.offerLast(card);
+		}
+		players.remove(currentPlayer);
+		updateTurn();
+		if( players.size() == 1 )
+		{
+			Frame outputFrame = getFrame();
+			if( outputFrame != null )
+			{
+				JOptionPane.showMessageDialog(outputFrame,
+				String.format("Jogador %s ganhou!",getCurrentPlayerColorName()),
+				"Vitória", JOptionPane.INFORMATION_MESSAGE);
+			}
+			System.exit(0);
+		}
 	}
 	
 	/**
@@ -255,7 +298,6 @@ public class Logic {
 				};
 				break;
 			}
-			if(type != 2) continue;
 			deck.offerFirst(new ChanceCard(imagePath, listener));
 		}
 	}
@@ -286,17 +328,37 @@ public class Logic {
 			switch(type) {
 			case 0:
 				// inert cell
+				cell = new GameCell(	name,
+										pos		);
 				break;
 			case 1:
 				cell = new ChanceCell(	name,
-										pos);
+										pos	);
 				// chance
 				break;
 			case 2:
 				// go to prison
+				cell = new ActionCell ( name,
+										pos,
+										new ActionListener() {
+											public void actionPerformed(ActionEvent e) {
+												Logic logic = Logic.getInstance();
+												Player player = (Player) e.getSource();
+												logic.sendToPrison(player);
+											}
+										});
 				break;
 			case 3:
 				// transaction cell
+				int amount = Integer.parseInt(cellInfo.get(4));
+				cell = new ActionCell ( name,
+										pos,
+										new ActionListener() {
+											public void actionPerformed(ActionEvent e) {
+												Player player = (Player) e.getSource();
+												player.accountTransfer(amount);
+											}
+										});
 				break;
 			case 4:
 				// territory
@@ -314,7 +376,7 @@ public class Logic {
 										Integer.parseInt(cellInfo.get(4)),
 										Integer.parseInt(cellInfo.get(5)),
 										Integer.parseInt(cellInfo.get(6)),
-										additionalFees);
+										additionalFees	);
 				break;
 			case 5:
 				// service
@@ -324,7 +386,7 @@ public class Logic {
 									LocalResources.servicesFolder + imgName + ".jpg",
 									pos,
 									Integer.parseInt(cellInfo.get(4)),
-									Integer.parseInt(cellInfo.get(5)));
+									Integer.parseInt(cellInfo.get(5))	);
 				break;
 			}
 			cells[pos] = cell;
@@ -344,7 +406,6 @@ public class Logic {
 		if( cellName == null ) return null;
 		for(int i = 0 ; i < cells.length; i++)
 		{
-			if( cells[i] == null ) continue; // TODO: initialize all cells
 			if( cellName.equals(cells[i].getName()) )
 				return cells[i];
 		}
@@ -359,7 +420,6 @@ public class Logic {
 		Player player = getCurrentPlayer();
 		for(int i = 0 ; i < numOfCells; i++) {
 			AbstractCell cell = cells[i];
-			if( cell == null ) continue; // TODO: instantiate all cells
 			if( cell.isOwnable() ) {
 				OwnableCell ownableCell = (OwnableCell) cell;
 				if( player == ownableCell.getOwner() ) {
@@ -401,6 +461,7 @@ public class Logic {
 			}
 			else
 			{
+				player.updateRoundsInPrisonCounter();
 				JOptionPane.showMessageDialog(	null, "Não foi dessa vez... Tente na próxima rodada",
 												"Prisão", JOptionPane.INFORMATION_MESSAGE);
 			}
@@ -413,7 +474,6 @@ public class Logic {
 			if( oldPos > newPos ) player.accountTransfer(200); // starting point bonus
 			player.setPos(newPos);
 			AbstractCell currentCell = cells[newPos];
-			if(currentCell == null) return; // TODO: implement all cells
 			int money = currentCell.charge(player, diceSum);
 			player.accountTransfer(-money);
 		}
@@ -428,6 +488,7 @@ public class Logic {
 		if( !canEndTurn() ) return; // never trust the user
 		canRollFlag = true;
 		nextTurn();
+		checkDebt();
 	}
 	
 	/**
@@ -466,7 +527,19 @@ public class Logic {
 	 * <p>Cycles the turn counter to the next player
 	 */
 	private void nextTurn() {
-		turn = (turn+1)%getNumPlayers();
+		turn += 1;
+		updateTurn();
+	}
+	
+	/**
+	 * <p>Caps turn counter to current number of players.
+	 * It is useful when removing players and making sure
+	 * the turn counter is within the boundaries of the
+	 * current number of players count (that has been
+	 * recently updated).
+	 */
+	private void updateTurn() { 
+		turn %= getNumPlayers();
 	}
 	
 	/**
@@ -478,6 +551,56 @@ public class Logic {
 		player.setPos(9);
 	}
 	
+	/**
+	 * <p>Checks if the current turn's player is on debt
+	 * with the bank. If so, it will prompt a dialog
+	 * that will oblige him to sell as many properties
+	 * as necessary to be on green again. If the sum
+	 * of all the players' fortunes isn't enough to
+	 * pay the debt, it will be automatically removed
+	 * from the player pool.
+	 */
+	private void checkDebt() {
+		Player player = getCurrentPlayer();
+		if( !player.isBroke() ) return; // isn't broke
+		int totalWorth = getPlayerFortuneSum(player);
+		Frame outputFrame = getFrame();
+		if( totalWorth < 0 )
+		{
+			// can't pay
+			if( outputFrame != null )
+			{
+				JOptionPane.showMessageDialog( outputFrame,
+				String.format("O jogador %s faliu. Seu patrimônio foi vendido e poderá ser comprado pelos seus adversários.",getCurrentPlayerColorName()),
+				"Falência", JOptionPane.WARNING_MESSAGE);
+			}
+			removeCurrentPlayer();
+		}
+		else
+		{
+			// can pay
+			if( outputFrame != null )
+			{
+				// ask which properties are to be sold
+				JOptionPane.showMessageDialog( outputFrame,
+				String.format("O jogador %s está devendo $ %d ao banco. Preste suas contas com o banco, vendendo propriedades!",getCurrentPlayerColorName(),-player.getBankAcc()),
+				"Dívidas", JOptionPane.WARNING_MESSAGE);
+				PropertyDialog dlg = new PropertyDialog(getFrame());
+				dlg.setVisible(true);
+			}
+			else
+			{
+				// sell as few properties as possible to pay debt
+				ArrayList<OwnableCell> cells = getCurrentPlayerCells();
+				for( OwnableCell cell : cells )
+				{
+					if( !player.isBroke() ) break;
+					cell.sell();
+				}
+			}
+		}
+	}
+		
 	/* **********************
 	 * GUI BUTTONS ACTIVENESS
 	 * ********************** */
@@ -523,7 +646,6 @@ public class Logic {
 	public boolean canBuy() {
 		if( canRollFlag ) return false; // waiting to roll dice first! 
 		AbstractCell steppingCell = getCurrentPlayerSteppingCell();
-		if( steppingCell == null ) return false; // TODO: implemented all cell types
 		if( !steppingCell.isOwnable() ) return false; // can't be owned
 		OwnableCell ownableCell = (OwnableCell) steppingCell;
 		if( ownableCell.getOwner() != null ) return false; // is already owned (maybe even by the current player itself)
@@ -539,7 +661,6 @@ public class Logic {
 	public boolean canUpgrade() {
 		if( canRollFlag ) return false; // waiting to roll dice first! 
 		AbstractCell steppingCell = getCurrentPlayerSteppingCell();
-		if( steppingCell == null ) return false; // TODO: implemented all cell types
 		if( !steppingCell.isOwnable() ) return false; // game cell!
 		OwnableCell ownableCell = (OwnableCell) steppingCell;
 		if( ownableCell.getOwner() != getCurrentPlayer() ) return false; // not your cell!
@@ -551,13 +672,19 @@ public class Logic {
 	 * ************* */
 	
 	/**
-	 * Sets frame to visual call backs
-	 * @param frame - new frame to be set
+	 * Sets frame from which dialogs can be constructed.
+	 * @param frame - a Frame that is visible to the user and
+	 * which it can be interacted with
 	 * @see #getFrame()
 	 */
 	public void setFrame( Frame frame ) { this.frame = frame; }
 	
 	/**
+	 * <p>Assures there is a GUI frame that the user can
+	 * interact with. If there isn't, that is, if this
+	 * function returns {@code null}, then the user cannot
+	 * interact with any GUI whatsoever. Therefore, some
+	 * decisions have to be made automatically.  
 	 * @return frame for visual call backs
 	 * @see #setFrame(Frame)
 	 */

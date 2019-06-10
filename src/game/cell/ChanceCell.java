@@ -1,5 +1,7 @@
 package game.cell;
 
+import java.util.Deque;
+
 import game.ChanceCard;
 import game.Logic;
 import game.Player;
@@ -20,8 +22,8 @@ public class ChanceCell extends GameCell {
 	}
 	
 	public int charge(Player player, int diceSum) {
-		Logic logic = Logic.getInstance();
-		ChanceCard card = logic.deck.peekFirst();
+		Deque<ChanceCard> deck = Logic.getInstance().deck;
+		ChanceCard card = deck.peekFirst();
 		card.triggerCard(player);
 		// Here, the following events can occur:
 		// - money is deducted or given
@@ -30,8 +32,8 @@ public class ChanceCell extends GameCell {
 		// The card will be always show to screen
 		
 		// Puts first card to the end of the deck
-		ChanceCard temp = logic.deck.pollFirst();
-		logic.deck.offerLast(temp);
+		ChanceCard temp = deck.pollFirst();
+		deck.offerLast(temp);
 		return 0;
 	}
 

@@ -27,6 +27,7 @@ public class Territory extends OwnableCell {
 	/**
 	 * [0] = ground fee (no upgrade)
 	 * [1..N] = fee with N upgrades
+	 * upgradeLevel can go up to steppingFees.length - 1
 	 */
 	private int [] steppingFees;
 	private int upgradingFee;
@@ -80,10 +81,21 @@ public class Territory extends OwnableCell {
 	 */
 	public int getUpgradeLevel() { return upgradeLevel; }
 	
+	public String getUpgradeLevelString()
+	{
+		int level = getUpgradeLevel();
+		if( level == 0 )
+			return "Sem sede";
+		else if( level == steppingFees.length - 1 )
+			return "Com comitê político";
+		else
+			return super.getUpgradeLevelString() + " sedes";
+	}
+	
 	/**
 	 * @return <p>{@code true} if:
 	 * <ul>
-	 * <li>all the owner's territories are on the same level</li>
+	 * <li>there is no other territory of the same owner with lower level</li>
 	 * <li>this very territory isn't on its the maximum upgrade level</li>
 	 * <li>the owner can afford the upgrading fee</li>
 	 * </uL>
@@ -94,23 +106,13 @@ public class Territory extends OwnableCell {
 		if( getOwner() == null ) return false;
 		int fee = getUpgradingFee();
 		if( !getOwner().canAfford(fee) ) return false;
-		if( logic == null )
-		{
-			System.out.println("logic null!");
-			return false;
-		}
 		ArrayList<OwnableCell> cells = logic.getCurrentPlayerCells();
-		if( cells == null )
-		{
-			System.out.println("cells null!");
-			return false;
-		}
 		int level = getUpgradeLevel();
 		Iterator<OwnableCell> iterator = cells.iterator();
 		while(iterator.hasNext()) {
 			OwnableCell cell = iterator.next();
 			if( !cell.isUpgradable() ) continue;
-			if( cell.getUpgradeLevel() != level ) return false;
+			if( cell.getUpgradeLevel() < level ) return false;
 		}
 		return 	upgradeLevel + 1 < steppingFees.length;
 	}
@@ -123,7 +125,10 @@ public class Territory extends OwnableCell {
 	 */
 	public boolean upgrade() {
 		if( !canUpgrade() ) return false;
-		if( !getOwner().accountTransfer(-getUpgradingFee()) ) return false;
+		int fee = getUpgradingFee();
+		Player newOwner = getOwner();
+		if( !newOwner.canAfford(fee) ) return false;
+		newOwner.accountTransfer(-fee);
 		upgradeLevel++;
 		return true;
 	}

@@ -22,16 +22,16 @@ import io.ImgList;
 public class ChanceCard {
 
 	private Image cardImg;
-	private ActionListener ae;
+	private ActionListener al;
 	
 	public ChanceCard(String imgPath, ActionListener listener) {
 		ImgList imgList = ImgList.getInstance();
 		cardImg = imgList.addImg(imgPath);
-		ae = listener;
+		al = listener;
 	}
 	
 	public void triggerCard(Player player) {
-		ae.actionPerformed(new ActionEvent(player,0,"Player gets a card!"));
+		al.actionPerformed(new ActionEvent(player,0,"Player gets a card!"));
 	}
 	
 	/**

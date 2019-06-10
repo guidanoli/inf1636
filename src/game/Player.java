@@ -15,7 +15,7 @@ import java.awt.Color;
  */
 public class Player {
 	
-	private boolean isInPrison = false;
+	private int roundsInPrisonLeft = 0;
 	private ChanceCard card = null;
 	
 	private int pos = 0;
@@ -71,20 +71,19 @@ public class Player {
 	 * <li>Do nothing (delta = 0)</li>
 	 * <li>Credit (delta > 0)</li>
 	 * </ul>
-	 * <p><b>It does not allow the player to
+	 * <p><b>It allows the player to
 	 * have a negative balance</b>
 	 * @param delta - difference added to the
 	 * players' bank account
-	 * @return {@code true} if player would be
+	 * @return {@code true} if player is now
 	 * broke after transfer.
 	 * @see #canAfford(int)
 	 * @see #getBankAcc()
 	 * @see #isBroke()
 	 */
 	public boolean accountTransfer(int delta) {
-		if( !canAfford(delta) ) return false;
 		this.bankAcc = getBankAcc() + delta;
-		return true;
+		return !isBroke();
 	}
 	
 	/**
@@ -149,7 +148,8 @@ public class Player {
 	 * @see #isInPrison()
 	 */
 	public void setInPrison( boolean inPrison ) {
-		isInPrison = inPrison;
+		if( inPrison ) roundsInPrisonLeft = 3;
+		else roundsInPrisonLeft = 0;
 	}
 	
 	/**
@@ -157,7 +157,15 @@ public class Player {
 	 * @see #setInPrison(boolean)
 	 */
 	public boolean isInPrison() {
-		return isInPrison;
+		return roundsInPrisonLeft > 0;
+	} 
+	
+	/**
+	 * Updates rounds in prison counter
+	 * @see #isInPrison()
+	 */
+	public void updateRoundsInPrisonCounter() {
+		if( roundsInPrisonLeft > 0 ) roundsInPrisonLeft--;
 	}
 	
 }
