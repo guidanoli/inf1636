@@ -20,14 +20,17 @@ public class Player {
 	
 	private int pos = 0;
 	private Color color;
+	private String colorName;
 	private int bankAcc = 2458;
 	
 	/**
 	 * Constructs a player
-	 * @param color - players' color
+	 * @param color - player's color
+	 * @param colorName - player's color name
 	 */
-	public Player(Color color) {
+	public Player(Color color, String colorName) {
 		this.color = color;
+		this.colorName = colorName;
 	}
 	
 	/**
@@ -57,6 +60,13 @@ public class Player {
 	 */
 	public Color getColor() {
 		return color;
+	}
+	
+	/**
+	 * @return player's color name
+	 */
+	public String getColorName() {
+		return colorName;
 	}
 	
 	/**

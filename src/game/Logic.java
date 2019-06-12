@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.Iterator;
+import java.util.StringJoiner;
 
 import javax.swing.JOptionPane;
 
@@ -51,6 +52,7 @@ public class Logic {
 	// players
 	private final int max_player_count = 6;
 	private ArrayList<Player> players = new ArrayList<Player>();
+	private ArrayList<Player> podium = new ArrayList<Player>(); 
 	
 	// players' color name
 	private final String [] playerColorNames = { 
@@ -102,7 +104,7 @@ public class Logic {
 	 */
 	public void setNumOfPlayers(int numOfPlayers) {
 		for( int i = 0; i < numOfPlayers && i < max_player_count; i++ )
-			players.add( new Player(playerColorIds[i]) );
+			players.add( new Player(playerColorIds[i], playerColorNames[i]) );
 	}
 	
 	/**
@@ -138,14 +140,14 @@ public class Logic {
 	 * @return the color of the current turn's player
 	 */
 	public Color getCurrentPlayerColor() {
-		return playerColorIds[turn];
+		return getCurrentPlayer().getColor();
 	}
 	
 	/**
 	 * @return the name of the color of the current turn's player
 	 */
 	public String getCurrentPlayerColorName() {
-		return playerColorNames[turn];
+		return getCurrentPlayer().getColorName();
 	}
 		
 	/**
@@ -194,16 +196,25 @@ public class Logic {
 			ChanceCard card = currentPlayer.takeCard();
 			deck.offerLast(card);
 		}
+		podium.add(currentPlayer);
 		players.remove(currentPlayer);
 		updateTurn();
 		if( players.size() == 1 )
 		{
+			Player winner = players.remove(0);
+			podium.add(winner);
 			Frame outputFrame = getFrame();
 			if( outputFrame != null )
 			{
-				JOptionPane.showMessageDialog(outputFrame,
-				String.format("Jogador %s ganhou!",getCurrentPlayerColorName()),
-				"Vitória", JOptionPane.INFORMATION_MESSAGE);
+				StringJoiner sj = new StringJoiner("\n");
+				int place = 1;
+				while(!podium.isEmpty())
+				{
+					Player p = podium.remove(podium.size()-1);
+					sj.add(String.format("%dº lugar - %s",place,p.getColorName()));
+					place++;
+				}
+				JOptionPane.showMessageDialog(outputFrame,sj.toString(),"Fim de jogo", JOptionPane.INFORMATION_MESSAGE);
 			}
 			System.exit(0);
 		}
