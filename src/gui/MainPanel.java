@@ -14,6 +14,7 @@ import io.LocalResources;
 
 import java.awt.*;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -39,13 +40,15 @@ public class MainPanel extends JPanel implements MouseListener {
 	private JButton upgradeBtn = new JButton("Construir");
 	private JButton endTurnBtn = new JButton("Terminar turno");
 	private JButton propertyBtn = new JButton("Meu patrimônio");
+	private JButton saveBtn = new JButton("Salvar");
 	
 	JButton [] btnGrid = {
 			rollBtn ,
 			propertyBtn ,
 			upgradeBtn ,
 			buyBtn ,
-			endTurnBtn
+			endTurnBtn,
+			saveBtn
 	};
 	
 	// graphical components
@@ -329,6 +332,11 @@ public class MainPanel extends JPanel implements MouseListener {
 			else if( btnSource == upgradeBtn )
 			{
 				logic.upgrade();
+			}
+			else if( btnSource == saveBtn ) {
+				JFileChooser c = new JFileChooser();
+				c.showOpenDialog(this);
+				logic.saveStateToFile(c.getSelectedFile());
 			}
 			
 			updateButtons();

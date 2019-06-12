@@ -23,9 +23,11 @@ public class ChanceCard {
 
 	private Image cardImg;
 	private ActionListener al;
+	private String imgPath;
 	
 	public ChanceCard(String imgPath, ActionListener listener) {
 		ImgList imgList = ImgList.getInstance();
+		this.imgPath = imgPath;
 		cardImg = imgList.addImg(imgPath);
 		al = listener;
 	}
@@ -39,4 +41,5 @@ public class ChanceCard {
 	 */
 	public Image getCardImage() { return cardImg; }
 	
+	public String getImagePath() { return imgPath; }
 }

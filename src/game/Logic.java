@@ -5,6 +5,7 @@ import java.awt.Frame;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -19,6 +20,7 @@ import gui.PropertyDialog;
 import io.CSVReader;
 import io.LocalResources;
 
+import io.StateManager;
 /**
  * <p>Logic is a class that generates a singleton that manages
  * the game mechanics, tying the game package to the gui package,
@@ -689,5 +691,23 @@ public class Logic {
 	 * @see #setFrame(Frame)
 	 */
 	public Frame getFrame() { return frame; }
+	
+	public void saveStateToFile(File f) {
+		ArrayList<Player> cellsOwners = new ArrayList<Player>();
+		ArrayList<Integer> cellsLevels = new ArrayList<Integer>();
+		for( int i = 0; i < cells.length; i++) {
+			if( cells[i] instanceof OwnableCell ) {				
+				cellsOwners.add(((OwnableCell) cells[i]).getOwner());
+				cellsLevels.add(Integer.valueOf(((OwnableCell) cells[i]).getUpgradeLevel()));
+			}
+		}
+		StateManager s = new StateManager(getNumPlayers(), this.turn, this.players,
+										  this.dice, this.deck, cellsOwners,
+										  cellsLevels);
+		s.writeProperties(f);
+	}
+	
+	public void loadStateFromFile(File f) {
+	}
 	
 }

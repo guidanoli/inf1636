@@ -47,6 +47,12 @@ public class Player {
 	}
 	
 	/**
+	 * @return player's rounds in Prison Left
+	 */
+	public int getRoundsInPrisonLeft() {
+		return roundsInPrisonLeft;
+	}
+	/**
 	 * @return player's color representation
 	 */
 	public Color getColor() {
@@ -166,6 +172,10 @@ public class Player {
 	 */
 	public void updateRoundsInPrisonCounter() {
 		if( roundsInPrisonLeft > 0 ) roundsInPrisonLeft--;
+	}
+
+	public void setBankAcc(int i) {
+		bankAcc = i;		
 	}
 	
 }
