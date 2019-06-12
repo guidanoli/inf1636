@@ -33,6 +33,11 @@ public class Player {
 		this.colorName = colorName;
 	}
 	
+	public Player(String colorName) {
+		this.color = Color.getColor(colorName);
+		this.colorName = colorName;
+	}
+
 	/**
 	 * @return position of player from the starting point
 	 * @see #setPos(int)
@@ -166,6 +171,13 @@ public class Player {
 	public void setInPrison( boolean inPrison ) {
 		if( inPrison ) roundsInPrisonLeft = 3;
 		else roundsInPrisonLeft = 0;
+	}
+	
+	/**
+	 * @param numRounds
+	 */
+	public void setInPrisonFor( int numRounds ) {
+		roundsInPrisonLeft = numRounds;
 	}
 	
 	/**

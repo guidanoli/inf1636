@@ -6,6 +6,7 @@ import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -65,7 +66,7 @@ public class Logic {
 	};
 	
 	// players' color id
-	private final Color [] playerColorIds = {
+	private final static Color [] playerColorIds = {
 		new Color(255,23,0) ,
 		new Color(36,98,193) ,
 		new Color(238,133,1) ,
@@ -185,6 +186,10 @@ public class Logic {
 		ArrayList<OwnableCell> cells = getCurrentPlayerCells();
 		for( OwnableCell cell : cells ) sum += cell.getWorthValue();
 		return sum;
+	}
+	
+	public static Color[] getPlayerColorIds() {
+		return playerColorIds;
 	}
 	
 	private void removeCurrentPlayer() {
@@ -718,7 +723,52 @@ public class Logic {
 		s.writeProperties(f);
 	}
 	
+	@SuppressWarnings("static-access")
 	public void loadStateFromFile(File f) {
+		StateManager sm;
+		try {
+			sm = StateManager.loadProperties(f);
+			this.setNumOfPlayers(sm.numPlayers);
+			this.turn = sm.turn;
+			this.players = sm.players;
+			
+			// loading deque state
+			/*TODO: Como posso melhorar o load das cartas?
+			 * 		dessa maneira estou criando cartas novas,
+			 * 		quando o que a gente gostaria é reposicionar
+			 * 		cartas já existentes...
+			 */
+			deck.addFirst(new ChanceCard(sm.cardImgPath, null));
+			// checking if any player had the escape card
+			for(int i = 0; i < players.size(); i++ ) {
+				if( players.get(i).hasCard() ) {
+					players.get(i).giveCard( new ChanceCard( "resources\\sprites\\sorteReves\\sorte03.jpg", null));
+				}
+			}
+			
+			// loading cells states
+			int indexLevels = 0;
+			int indexOwners = 0;
+			/*
+			for( int i = 0; i < numOfCells; i++) {
+				if( cells[i] instanceof Territory ) {
+					if( sm.cellsLevels.get(indexLevels) > 0 ) { 
+						for( int j = 0; j < sm.cellsLevels.get(indexLevels); j++ ) {
+							((Territory) cells[i]).upgrade();
+						}
+					}
+					indexLevels++;
+					
+				}
+				if( cells[i] instanceof OwnableCell) {
+					((OwnableCell) cells[i]).setOwner(sm.cellsOwners.get(indexOwners));
+					indexOwners++;
+				}
+			}*/
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
-	
 }

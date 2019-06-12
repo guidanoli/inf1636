@@ -1,8 +1,8 @@
 package io;
 
-import java.awt.Color;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -11,11 +11,9 @@ import java.util.Properties;
 
 import game.ChanceCard;
 import game.Dice;
+import game.Logic;
 import game.Player;
-import game.cell.AbstractCell;
-import game.cell.GameCell;
-import game.cell.OwnableCell;
-import game.cell.Territory;
+
 
 
 /**
@@ -33,19 +31,24 @@ public class StateManager extends Properties {
 	//
 	public int numPlayers;
 	public int turn;
-	public ArrayList<Player> players;
-		
-	public final int numOfCells = 36; 
+	public static ArrayList<Player> players;
+	
 	public Dice dice;
 	public int[] lastRoll;
+	
 	public Deque<ChanceCard> deck;
-	public ArrayList<Player> cellsOwners;
-	public ArrayList<Integer> cellsLevels;
+	public String cardImgPath;
+	public String cardOwner;
+	
+	public final int numOfCells = 36; 
+	public static ArrayList<Player> cellsOwners;
+	public static ArrayList<Integer> cellsLevels;
 	
 	private StateManager() {
 		
 	}
 	
+	@SuppressWarnings("static-access")
 	public StateManager(int numPlayers, int turn,
 						ArrayList<Player> players, Dice dice, Deque<ChanceCard> deck,
 						ArrayList<Player> cellsOwners1, ArrayList<Integer> cellsLevels1) {
@@ -72,7 +75,7 @@ public class StateManager extends Properties {
 	            for (int i = 0; i < players.size(); i++) {
 	            	prop.setProperty(String.format("player.%d.pos", i), String.format("%d", players.get(i).getPos()));
 	            	prop.setProperty(String.format("player.%d.bankacc", i), String.format("%d", players.get(i).getBankAcc()));
-	            	prop.setProperty(String.format("player.%d.color", i), String.format("%d", players.get(i).getColor().getRGB()));
+	            	prop.setProperty(String.format("player.%d.color", i), players.get(i).getColorName());
 	            	prop.setProperty(String.format("player.%d.roundsinprisonleft", i),  String.format("%d",  players.get(i).getRoundsInPrisonLeft()));
 	            	if( players.get(i).hasCard() ) {
 	            		escapeCardOwner = i;
@@ -100,27 +103,45 @@ public class StateManager extends Properties {
 		 }
 	}
 	
-	public StateManager loadProperties(File f) {
+	@SuppressWarnings("static-access")
+	public static StateManager loadProperties(File f) throws IOException {
 		StateManager sm = new StateManager();
-		try (OutputStream output = new FileOutputStream(f.getAbsolutePath())) {
-			Properties prop = new Properties();
-	        ArrayList<Player> players = new ArrayList<Player>();
-	        sm.numPlayers = Integer.parseInt(prop.getProperty("logic.numPlayers"));
-	        sm.numPlayers = Integer.parseInt(prop.getProperty("logic.turn"));
+		FileReader reader=new FileReader(f.getAbsolutePath());
+		Properties prop = new Properties();
+		prop.load(reader);
+		// logic values
+        sm.numPlayers = Integer.parseInt(prop.getProperty("logic.numPlayers"));
+        sm.turn = Integer.parseInt(prop.getProperty("logic.turn"));
+	    // card values
+	    sm.cardImgPath = prop.getProperty("deck.first");
+	    sm.cardOwner = prop.getProperty("deck.escapecardowner");
 	        
-	        for (int i = 0; i < sm.numPlayers; i++) {
-	        	Player p = new Player(Color.getColor(prop.getProperty(String.format("player.%d.color", i))));
-	            p.setPos(Integer.parseInt(prop.getProperty(String.format("player.%d.pos", i))));
-	            p.setBankAcc((Integer.parseInt(prop.getProperty(String.format("player.%d.bankacc", i)))));
-	            players.add(p);
-			}
-	        for (int i = 0; i < cellsOwners.size(); i++) {
-            	cellsOwners.add( new Player(Color.getColor(prop.getProperty(String.format("player.%d.color", i)))));
-            	cellsLevels.add(Integer.parseInt(prop.getProperty(String.format("ownablecell.%d.upgradelevel", i))));
-			}
-		 } catch (IOException io) {
-			 io.printStackTrace();
-	     }
-		return sm;
+	    // player value
+	    sm.players = new ArrayList<Player>();
+	    for (int i = 0; i < sm.numPlayers; i++) {
+	    	Player p = new Player(Logic.getPlayerColorIds()[i], prop.getProperty(String.format("player.%d.color", i)));
+            p.setPos(Integer.parseInt(prop.getProperty(String.format("player.%d.pos", i))));
+            p.setBankAcc((Integer.parseInt(prop.getProperty(String.format("player.%d.bankacc", i)))));
+            p.setInPrisonFor( Integer.parseInt(prop.getProperty(String.format("player.%d.roundsinprisonleft", i))));
+            if( p.getColorName() == sm.cardOwner ) {
+            	p.giveCard( new ChanceCard( sm.cardImgPath, null));
+            }
+            if( p != null ) {
+            	sm.players.add(p);
+            }
+		}
+        // cell values
+	    sm.cellsOwners = new ArrayList<Player>();
+	    sm.cellsLevels = new ArrayList<Integer>();
+        for (int i = 0; i < sm.cellsOwners.size(); i++) {
+        	sm.cellsOwners.add( new Player((prop.getProperty(String.format("player.%d.color", i)))));
+        	sm.cellsLevels.add(Integer.parseInt(prop.getProperty(String.format("ownablecell.%d.upgradelevel", i))));
+		}
+                    
+           // dice values
+        sm.lastRoll = new int[2];
+        sm.lastRoll[0] = Integer.parseInt(prop.getProperty("dice.sideup.0"));
+        sm.lastRoll[1] = Integer.parseInt(prop.getProperty("dice.sideup.1"));       
+        return sm;
 	}
 }

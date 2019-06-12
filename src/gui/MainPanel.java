@@ -14,7 +14,6 @@ import io.LocalResources;
 
 import java.awt.*;
 import java.io.File;
-import java.io.FileFilter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -41,6 +40,8 @@ public class MainPanel extends JPanel implements MouseListener {
 	private JButton endTurnBtn = new JButton("Terminar turno");
 	private JButton propertyBtn = new JButton("Meu patrimônio");
 	private JButton saveBtn = new JButton("Salvar");
+	private JButton loadBtn = new JButton("Carregar");
+
 	
 	JButton [] btnGrid = {
 			rollBtn ,
@@ -48,7 +49,8 @@ public class MainPanel extends JPanel implements MouseListener {
 			upgradeBtn ,
 			buyBtn ,
 			endTurnBtn,
-			saveBtn
+			saveBtn,
+			loadBtn
 	};
 	
 	// graphical components
@@ -337,6 +339,12 @@ public class MainPanel extends JPanel implements MouseListener {
 				JFileChooser c = new JFileChooser();
 				c.showOpenDialog(this);
 				logic.saveStateToFile(c.getSelectedFile());
+			}
+			else if( btnSource == loadBtn ) {
+				JFileChooser c = new JFileChooser();
+				c.showOpenDialog(this);
+				logic.loadStateFromFile(c.getSelectedFile());
+				repaint();
 			}
 			
 			updateButtons();
