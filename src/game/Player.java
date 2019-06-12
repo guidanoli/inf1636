@@ -60,6 +60,7 @@ public class Player {
 	public int getRoundsInPrisonLeft() {
 		return roundsInPrisonLeft;
 	}
+	
 	/**
 	 * @return player's color representation
 	 */
@@ -68,10 +69,24 @@ public class Player {
 	}
 	
 	/**
+	 * @param c - player color
+	 */
+	public void setColor(Color c) {
+		this.color = c;
+	}
+	
+	/**
 	 * @return player's color name
 	 */
 	public String getColorName() {
 		return colorName;
+	}
+	
+	/**
+	 * @param cname - player color name
+	 */
+	public void setColorName(String cname) {
+		this.colorName = cname;
 	}
 	
 	/**

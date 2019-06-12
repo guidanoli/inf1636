@@ -733,18 +733,23 @@ public class Logic {
 			this.players = sm.players;
 			
 			// loading deque state
-			/*TODO: Como posso melhorar o load das cartas?
-			 * 		dessa maneira estou criando cartas novas,
-			 * 		quando o que a gente gostaria é reposicionar
-			 * 		cartas já existentes...
-			 */
-			deck.addFirst(new ChanceCard(sm.cardImgPath, null));
-			// checking if any player had the escape card
-			for(int i = 0; i < players.size(); i++ ) {
-				if( players.get(i).hasCard() ) {
-					players.get(i).giveCard( new ChanceCard( "resources\\sprites\\sorteReves\\sorte03.jpg", null));
-				}
+			int cardOwnerId = Integer.parseInt(sm.cardOwner);
+			ChanceCard escapeCard = null;
+			String escapeCardPath = "resources\\sprites\\sorteReves\\sorte03.jpg";
+			for( Player player : players )
+			{
+				if( player.hasCard() )
+					escapeCard = player.takeCard();
 			}
+			if( cardOwnerId != -1 )
+			{
+				if( escapeCard == null )
+					while( (escapeCard=deck.pollFirst()).getImagePath() != escapeCardPath )
+						deck.offerLast(escapeCard);
+				players.get(cardOwnerId).giveCard(escapeCard);
+			}
+			String topCardPath = sm.cardImgPath;
+			while( deck.peekFirst().getImagePath() != topCardPath ) deck.offerLast(deck.pollFirst());
 			
 			// loading cells states
 			int indexLevels = 0;
