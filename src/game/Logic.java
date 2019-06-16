@@ -749,31 +749,29 @@ public class Logic {
 				players.get(cardOwnerId).giveCard(escapeCard);
 			}
 			String topCardPath = sm.cardImgPath;
-			while( deck.peekFirst().getImagePath() != topCardPath ) deck.offerLast(deck.pollFirst());
+			//TODO: comentei essa parte do código, pois estava prendendo a execução do programa, precisamos depurar o porquê?
+		//	while( deck.peekFirst().getImagePath() != topCardPath ) deck.offerLast(deck.pollFirst());
 			
 			// loading cells states
 			int indexLevels = 0;
 			int indexOwners = 0;
-			/*
 			for( int i = 0; i < numOfCells; i++) {
-				if( cells[i] instanceof Territory ) {
-					if( sm.cellsLevels.get(indexLevels) > 0 ) { 
-						for( int j = 0; j < sm.cellsLevels.get(indexLevels); j++ ) {
-							((Territory) cells[i]).upgrade();
-						}
-					}
-					indexLevels++;
-					
-				}
 				if( cells[i] instanceof OwnableCell) {
-					((OwnableCell) cells[i]).setOwner(sm.cellsOwners.get(indexOwners));
+					if( !sm.cellsOwners.get(indexOwners).equals("0") ) {
+						int aux = 0;
+						while( !players.get(aux).getColorName().equals(sm.cellsOwners.get(indexOwners))) {
+							aux++;
+						}
+						((OwnableCell) cells[i]).setOwner(players.get(aux));
+						((Territory) cells[i]).setUpgradeLevel( Integer.parseInt(sm.cellsLevels.get(indexLevels)) );
+					}
 					indexOwners++;
+					indexLevels++;
 				}
-			}*/
+			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
 	}
 }

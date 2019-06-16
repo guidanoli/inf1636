@@ -40,9 +40,9 @@ public class StateManager extends Properties {
 	public String cardImgPath;
 	public String cardOwner;
 	
-	public final int numOfCells = 36; 
-	public static ArrayList<Player> cellsOwners;
-	public static ArrayList<Integer> cellsLevels;
+	public final static int numOfCells = 36; 
+	public static ArrayList<String> cellsOwners = new ArrayList<String>();
+	public static ArrayList<String> cellsLevels = new ArrayList<String>();
 	
 	private StateManager() {
 		
@@ -57,8 +57,16 @@ public class StateManager extends Properties {
 		this.players = players;
 		this.dice = dice;
 		this.deck = deck;
-		this.cellsLevels = cellsLevels1;
-		this.cellsOwners = cellsOwners1;
+		for(int i = 0; i < cellsOwners1.size(); i ++ ) {
+			if( cellsOwners1.get(i) == null ) {
+				this.cellsOwners.add("0");
+			} else {
+				this.cellsOwners.add(cellsOwners1.get(i).getColorName());
+			}
+		}
+		for(int i = 0; i < cellsLevels1.size(); i ++ ) {
+			this.cellsLevels.add(String.format("%d" , cellsLevels1.get(i)));
+		}
 	}
 	
 	public void writeProperties(File f) {
@@ -88,12 +96,15 @@ public class StateManager extends Properties {
 	            // cells state properties values
 	            for( int i = 0; i < cellsOwners.size(); i++ ) {
 	            	if( cellsOwners.get(i) == null ) {
-	            		prop.setProperty(String.format("ownablecell.%d.owner", i), "null");
+	            		prop.setProperty(String.format("ownablecell.%d.owner", i), "-1");
 	            	} else {
-	            		prop.setProperty(String.format("ownablecell.%d.owner", i), String.format("%d", cellsOwners.get(i).getColor().getRGB()));
+	            		prop.setProperty(String.format("ownablecell.%d.owner", i), cellsOwners.get(i));
 	            	}
+	            }
+	            for( int i = 0; i < cellsLevels.size(); i++ ) {
 		            prop.setProperty(String.format("ownablecell.%d.upgradelevel", i), cellsLevels.get(i).toString());
 	            }
+
 	            // Save properties
 	            prop.store(output, null);
 
@@ -131,11 +142,11 @@ public class StateManager extends Properties {
             }
 		}
         // cell values
-	    sm.cellsOwners = new ArrayList<Player>();
-	    sm.cellsLevels = new ArrayList<Integer>();
-        for (int i = 0; i < sm.cellsOwners.size(); i++) {
-        	sm.cellsOwners.add( new Player((prop.getProperty(String.format("player.%d.color", i)))));
-        	sm.cellsLevels.add(Integer.parseInt(prop.getProperty(String.format("ownablecell.%d.upgradelevel", i))));
+	    sm.cellsOwners = new ArrayList<String>();
+	    sm.cellsLevels = new ArrayList<String>();
+        for (int i = 0; i < numOfCells; i++) {
+        	sm.cellsOwners.add( prop.getProperty(String.format("ownablecell.%d.owner", i)));
+        	sm.cellsLevels.add( prop.getProperty(String.format("ownablecell.%d.upgradelevel", i)));
 		}
                     
            // dice values

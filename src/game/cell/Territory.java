@@ -149,7 +149,21 @@ public class Territory extends OwnableCell {
 		upgradeLevel++;
 		return true;
 	}
-
+	
+	/**
+	 * Upgrades territory level to the indicated level
+	 * 
+	 * @see #canUpgrade()
+	 * @see #upgrade()
+	 * @return {@code false} if could not upgrade
+	 */
+	
+	public boolean setUpgradeLevel(int lvl) {
+//		if (!canUpgrade())
+//			return false;
+		upgradeLevel = lvl;
+		return true;
+	}
 	/**
 	 * <p>
 	 * Returns fee charged depending on fees established by the constructor and the
