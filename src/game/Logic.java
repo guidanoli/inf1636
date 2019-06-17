@@ -750,7 +750,9 @@ public class Logic {
 			}
 			String topCardPath = sm.cardImgPath;
 			//TODO: comentei essa parte do código, pois estava prendendo a execução do programa, precisamos depurar o porquê?
-		//	while( deck.peekFirst().getImagePath() != topCardPath ) deck.offerLast(deck.pollFirst());
+			while( !deck.peekFirst().getImagePath().equals(topCardPath) ) {
+				deck.offerLast(deck.pollFirst());
+			}
 			
 			// loading cells states
 			int indexLevels = 0;
