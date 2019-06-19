@@ -343,8 +343,11 @@ public class MainPanel extends JPanel implements MouseListener {
 			else if( btnSource == loadBtn ) {
 				JFileChooser c = new JFileChooser();
 				c.showOpenDialog(this);
-				logic.loadStateFromFile(c.getSelectedFile());
-				repaint();
+				File f = c.getSelectedFile();
+				if( f != null ) {
+					logic.loadStateFromFile(f);
+					repaint();
+				}
 			}
 			
 			updateButtons();
