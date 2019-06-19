@@ -1,5 +1,6 @@
 package gui;
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
@@ -336,22 +337,28 @@ public class MainPanel extends JPanel implements MouseListener {
 				logic.upgrade();
 			}
 			else if( btnSource == saveBtn ) {
-				JFileChooser c = new JFileChooser();
-				c.showOpenDialog(this);
-				logic.saveStateToFile(c.getSelectedFile());
+				File saveFile = openStateFileDialog();
+				if( saveFile != null ) logic.saveStateToFile(saveFile);
 			}
 			else if( btnSource == loadBtn ) {
-				JFileChooser c = new JFileChooser();
-				c.showOpenDialog(this);
-				File f = c.getSelectedFile();
-				if( f != null ) {
-					logic.loadStateFromFile(f);
+				File saveFile = openStateFileDialog();
+				if( saveFile != null ) {
+					logic.loadStateFromFile(saveFile);
 					repaint();
 				}
 			}
 			
 			updateButtons();
 		}
+	}
+	
+	private File openStateFileDialog() {
+		JFileChooser chooser = new JFileChooser();
+		FileNameExtensionFilter filter = new FileNameExtensionFilter(
+        "Estado de Jogo (*.gamestate)", "gamestate");
+	    chooser.setFileFilter(filter);
+		chooser.showOpenDialog(this);
+		return chooser.getSelectedFile();
 	}
 	
 	// Unimplemented methods

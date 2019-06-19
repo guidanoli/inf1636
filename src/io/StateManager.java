@@ -114,7 +114,6 @@ public class StateManager extends Properties {
 		 }
 	}
 	
-	@SuppressWarnings("static-access")
 	public static StateManager loadProperties(File f) throws IOException {
 		StateManager sm = new StateManager();
 		FileReader reader=new FileReader(f.getAbsolutePath());
@@ -128,7 +127,7 @@ public class StateManager extends Properties {
 	    sm.cardOwner = prop.getProperty("deck.escapecardowner");
 	        
 	    // player value
-	    sm.players = new ArrayList<Player>();
+	    players = new ArrayList<Player>();
 	    for (int i = 0; i < sm.numPlayers; i++) {
 	    	Player p = new Player(Logic.getPlayerColorIds()[i], prop.getProperty(String.format("player.%d.color", i)));
             p.setPos(Integer.parseInt(prop.getProperty(String.format("player.%d.pos", i))));
@@ -138,15 +137,15 @@ public class StateManager extends Properties {
             	p.giveCard( new ChanceCard( sm.cardImgPath, null));
             }
             if( p != null ) {
-            	sm.players.add(p);
+            	players.add(p);
             }
 		}
         // cell values
-	    sm.cellsOwners = new ArrayList<String>();
-	    sm.cellsLevels = new ArrayList<String>();
+	    cellsOwners = new ArrayList<String>();
+	    cellsLevels = new ArrayList<String>();
         for (int i = 0; i < numOfCells; i++) {
-        	sm.cellsOwners.add( prop.getProperty(String.format("ownablecell.%d.owner", i)));
-        	sm.cellsLevels.add( prop.getProperty(String.format("ownablecell.%d.upgradelevel", i)));
+        	cellsOwners.add( prop.getProperty(String.format("ownablecell.%d.owner", i)));
+        	cellsLevels.add( prop.getProperty(String.format("ownablecell.%d.upgradelevel", i)));
 		}
                     
            // dice values
