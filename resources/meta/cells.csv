@@ -1,37 +1,37 @@
-Posição,Nome,Tipo,1º Argumento,2º Argumento,3º Argumento,4º Argumento,5º Argumento,6º Argumento,7º Argumento,8º Argumento,9º Argumento
-9,Bangu 1 (visitante),0,,,,,,,,,
-18,Pagode e Cerveja,0,,,,,,,,,
-0,Ponto de Partida,0,,,,,,,,,
-2,Sorte-Revés,1,,,,,,,,,
-6,Sorte-Revés,1,,,,,,,,,
-13,Sorte-Revés,1,,,,,,,,,
-23,Sorte-Revés,1,,,,,,,,,
-29,Sorte-Revés,1,,,,,,,,,
-33,Sorte-Revés,1,,,,,,,,,
-27,Bangu 1 (vá para prisão),2,,,,,,,,,
-34,Custos de Campanha,3,,-200,,,,,,,
-17,Propinas e Extorsões,3,,200,,,,,,,
-16,Barbante,4,barbante,220,150,18,90,250,700,875,1050
-14,Batan,4,batan,260,150,22,110,330,800,975,1150
-12,Botafogo,4,botafogo,300,200,26,130,390,900,1100,1275
-21,Caixa D’Água,4,caixaagua,140,100,10,50,150,450,625,750
-30,Carobinha,4,carobinha,240,150,20,100,300,750,925,1100
-35,Cidade Alta,4,cidadealta,100,50,6,30,90,270,400,500
-1,Curicica,4,curicica,220,200,28,150,450,1000,1200,1400
-28,Fubá,4,fuba,160,100,12,60,180,500,700,900
-32,Fumacê,4,fumace,100,50,6,30,90,270,400,500
-20,Gardênia Azul,4,gardeniaazul,180,100,14,70,200,550,750,950
-10,Guaporé,4,guapore,60,50,4,20,60,160,320,450
-22,Kelson’s,4,kelsons,120,50,8,40,100,300,450,600
-4,Leme,4,leme,300,200,26,130,390,900,1100,1275
-8,Morro do 18,4,morro18,140,100,10,50,150,450,625,750
-25,Quitungo,4,quitungo,60,50,4,20,60,180,320,450
-26,Rio das Pedras,4,riodaspedras,260,150,22,110,330,800,975,1150
-11,Tanque,4,tanque,180,100,14,70,200,550,750,950
-5,Vilar Carioca,4,vilarcarioca,220,150,18,90,250,700,875,1050
-7,Botijão de Gás,5,empresa2,150,40,,,,,,
-3,Máquina de Caça-Níquel,5,empresa3,200,50,,,,,,
-19,Segurança Patrimonial,5,empresa5,200,50,,,,,,
-24,Serviço de Moto-Táxi,5,empresa4,200,50,,,,,,
-31,Sinal de TV à Gato,5,empresa1,150,40,,,,,,
-15,Transporte Alternativo,5,empresa6,200,50,,,,,,
+Posição,Nome,Tipo,1º Argumento,2º Argumento,3º Argumento,4º Argumento,5º Argumento,6º Argumento,7º Argumento,8º Argumento,9º Argumento,10º Argumento
+9,Bangu 1 (visitante),0,,,,,,,,,,
+18,Pagode e Cerveja,0,,,,,,,,,,
+0,Ponto de Partida,0,,,,,,,,,,
+2,Sorte-Revés,1,,,,,,,,,,
+6,Sorte-Revés,1,,,,,,,,,,
+13,Sorte-Revés,1,,,,,,,,,,
+23,Sorte-Revés,1,,,,,,,,,,
+29,Sorte-Revés,1,,,,,,,,,,
+33,Sorte-Revés,1,,,,,,,,,,
+27,Bangu 1 (vá para prisão),2,,,,,,,,,,
+34,Custos de Campanha,3,,-200,,,,,,,,
+17,Propinas e Extorsões,3,,200,,,,,,,,
+16,Barbante,4,barbante,2,220,150,18,90,250,700,875,1050
+14,Batan,4,batan,5,260,150,22,110,330,800,975,1150
+12,Botafogo,4,botafogo,1,300,200,26,130,390,900,1100,1275
+21,Caixa D’Água,4,caixaagua,3,140,100,10,50,150,450,625,750
+30,Carobinha,4,carobinha,2,240,150,20,100,300,750,925,1100
+35,Cidade Alta,4,cidadealta,4,100,50,6,30,90,270,400,500
+1,Curicica,4,curicica,0,220,200,28,150,450,1000,1200,1400
+28,Fubá,4,fuba,3,160,100,12,60,180,500,700,900
+32,Fumacê,4,fumace,5,100,50,6,30,90,270,400,500
+20,Gardênia Azul,4,gardeniaazul,0,180,100,14,70,200,550,750,950
+10,Guaporé,4,guapore,4,60,50,4,20,60,160,320,450
+22,Kelson’s,4,kelsons,5,120,50,8,40,100,300,450,600
+4,Leme,4,leme,1,300,200,26,130,390,900,1100,1275
+8,Morro do 18,4,morro18,3,140,100,10,50,150,450,625,750
+25,Quitungo,4,quitungo,4,60,50,4,20,60,180,320,450
+26,Rio das Pedras,4,riodaspedras,1,260,150,22,110,330,800,975,1150
+11,Tanque,4,tanque,0,180,100,14,70,200,550,750,950
+5,Vilar Carioca,4,vilarcarioca,2,220,150,18,90,250,700,875,1050
+7,Botijão de Gás,5,empresa2,150,40,,,,,,,
+3,Máquina de Caça-Níquel,5,empresa3,200,50,,,,,,,
+19,Segurança Patrimonial,5,empresa5,200,50,,,,,,,
+24,Serviço de Moto-Táxi,5,empresa4,200,50,,,,,,,
+31,Sinal de TV à Gato,5,empresa1,150,40,,,,,,,
+15,Transporte Alternativo,5,empresa6,200,50,,,,,,,

@@ -30,7 +30,7 @@ corresponding cell type class constructor
 1 = no arguments
 2 = no arguments
 3 = transaction delta
-4 = image filename | buying fee | upgrade fee | stepping fees...
+4 = image filename | group id | buying fee | upgrade fee | stepping fees...
 5 = image filename | buying fee | multiplier
 
 Be aware that the image filename does not contain the full path

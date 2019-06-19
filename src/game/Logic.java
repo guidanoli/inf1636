@@ -188,8 +188,38 @@ public class Logic {
 		return sum;
 	}
 	
+	/**
+	 * @return player color ids (Color objects)
+	 */
 	public static Color[] getPlayerColorIds() {
 		return playerColorIds;
+	}
+
+	/**
+	 * Check if all the territories of group are owned by current player
+	 * @param group - group identification
+	 * @return {@code true} if player has control of group
+	 */
+	public boolean currentPlayerHasGroup(int group) {
+		ArrayList<OwnableCell> playerCells = getCurrentPlayerCells();
+		int playerGroupCount = 0, groupCount = 0;
+		for( OwnableCell playerCell : playerCells )
+		{
+			if( playerCell instanceof Territory )
+			{
+				Territory territory = (Territory) playerCell;
+				if( territory.getGroup() == group ) playerGroupCount++;
+			}
+		}
+		for( AbstractCell cell : cells )
+		{
+			if( cell instanceof Territory )
+			{
+				Territory territory = (Territory) cell;
+				if( territory.getGroup() == group ) groupCount++;
+			}
+		}
+		return groupCount == playerGroupCount;
 	}
 	
 	private void removeCurrentPlayer() {
@@ -380,12 +410,12 @@ public class Logic {
 				break;
 			case 4:
 				// territory
-				assert(cellInfo.size() >= 7);
+				assert(cellInfo.size() >= 8);
 				int [] additionalFees = null;
-				if( cellInfo.size() > 8 ) {
-					additionalFees = new int[cellInfo.size()-7];
+				if( cellInfo.size() >= 9 ) {
+					additionalFees = new int[cellInfo.size()-8];
 					for(int i = 0 ; i < additionalFees.length; i++)
-						additionalFees[i] = Integer.parseInt(cellInfo.get(i+7));
+						additionalFees[i] = Integer.parseInt(cellInfo.get(i+8));
 				}
 				imgName = cellInfo.get(3);
 				cell = new Territory(	name,
@@ -394,6 +424,7 @@ public class Logic {
 										Integer.parseInt(cellInfo.get(4)),
 										Integer.parseInt(cellInfo.get(5)),
 										Integer.parseInt(cellInfo.get(6)),
+										Integer.parseInt(cellInfo.get(7)),
 										additionalFees	);
 				break;
 			case 5:

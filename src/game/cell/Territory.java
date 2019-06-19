@@ -33,6 +33,7 @@ public class Territory extends OwnableCell {
 	private int[] steppingFees;
 	private int upgradingFee;
 	private int upgradeLevel = 0;
+	private int group;
 
 	/**
 	 * <p>
@@ -41,8 +42,11 @@ public class Territory extends OwnableCell {
 	 * @param name         - name of the cell
 	 * @param imgPath      - path of image file of card
 	 * @param pos          - position of cell in board from starting point.
+	 * @param group        - group from which the territory belongs. The player has
+	 *                       to acquire all the territories from a group to start
+	 *                       upgrading it.
 	 * @param buyingFee    - fee charged from the new owner in the moment of buying
-	 *                     it.
+	 *                     - it.
 	 * @param upgradingFee - fee charged from the owner in the moment of building a
 	 *                     new establishment.
 	 * @param groundFee    - fee charged from the player that steps on the cell when
@@ -56,12 +60,12 @@ public class Territory extends OwnableCell {
 	 *                     cell more costful to be stepped each new level, that is,
 	 *                     the higher the index of the array.
 	 */
-	public Territory(String name, String imgPath, int pos, int buyingFee, int upgradingFee, int groundFee,
-			int... steppingFees) {
+	public Territory(String name, String imgPath, int pos, int group, int buyingFee, int upgradingFee, int groundFee, int... steppingFees) {
 		super(name, imgPath, pos, buyingFee);
 		this.steppingFees = new int[steppingFees.length + 1];
 		this.steppingFees[0] = groundFee;
 		this.upgradingFee = upgradingFee;
+		this.group = group;
 		for (int i = 0; i < steppingFees.length; i++)
 			this.steppingFees[i + 1] = steppingFees[i];
 	}
@@ -114,6 +118,8 @@ public class Territory extends OwnableCell {
 	public boolean canUpgrade() {
 		Logic logic = Logic.getInstance();
 		if (getOwner() == null)
+			return false;
+		if (!logic.currentPlayerHasGroup(group))
 			return false;
 		int fee = getUpgradingFee();
 		if (!getOwner().canAfford(fee))
@@ -179,5 +185,10 @@ public class Territory extends OwnableCell {
 	protected boolean isUpgradable() {
 		return true;
 	}
+	
+	/**
+	 * @return territory group
+	 */
+	public int getGroup() { return group; }
 
 }

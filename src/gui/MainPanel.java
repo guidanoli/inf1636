@@ -354,11 +354,22 @@ public class MainPanel extends JPanel implements MouseListener {
 	
 	private File openStateFileDialog() {
 		JFileChooser chooser = new JFileChooser();
+		String ext = "gamestate";
 		FileNameExtensionFilter filter = new FileNameExtensionFilter(
-        "Estado de Jogo (*.gamestate)", "gamestate");
+        "Estado de Jogo (*."+ext+")", ext);
 	    chooser.setFileFilter(filter);
 		chooser.showOpenDialog(this);
-		return chooser.getSelectedFile();
+		File f = chooser.getSelectedFile();
+		if( f != null )
+		{
+			String filename = f.toString();
+			if (!filename .endsWith(ext))
+			{
+		    	filename += ext;
+		    	f = new File(filename);
+			}
+		}
+		return f;
 	}
 	
 	// Unimplemented methods
