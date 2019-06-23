@@ -237,23 +237,52 @@ public class Logic {
 		{
 			Player winner = players.remove(0);
 			podium.add(winner);
-			Frame outputFrame = getFrame();
-			if( outputFrame != null )
-			{
-				StringJoiner sj = new StringJoiner("\n");
-				int place = 1;
-				while(!podium.isEmpty())
-				{
-					Player p = podium.remove(podium.size()-1);
-					sj.add(String.format("%dº lugar - %s",place,p.getColorName()));
-					place++;
-				}
-				JOptionPane.showMessageDialog(outputFrame,sj.toString(),"Fim de jogo", JOptionPane.INFORMATION_MESSAGE);
-			}
+			showPodium();
 			System.exit(0);
 		}
 	}
 	
+	/**
+	 * <p>Displays players in podium in order
+	 * <p>That is, the last player to be added to the podium
+	 * is highest on the podium.
+	 * <p>Make sure all players are on the podium!
+	 */
+	private void showPodium() {
+		Frame outputFrame = getFrame();
+		final String nl = "\n";
+		final String comma = ", ";
+		if( outputFrame != null )
+		{
+			StringJoiner podiumSJ = new StringJoiner(nl);
+			StringJoiner placeSJ = new StringJoiner(comma);
+			int place = 1;
+			int previous_fortune = -1;
+			while(!podium.isEmpty())
+			{
+				Player p = podium.remove(podium.size()-1);
+				int current_fortune = getPlayerFortuneSum(p);
+				if( previous_fortune == -1 ) previous_fortune = current_fortune;
+				if( current_fortune != previous_fortune
+					|| previous_fortune <= 0 )
+				{
+					String placeStr = placeSJ.toString();
+					podiumSJ.add(String.format("%dº lugar - %s ($ %d)",place,placeStr,previous_fortune));
+					placeSJ = new StringJoiner(comma);
+					place++;
+				}
+				placeSJ.add(p.getColorName());
+				previous_fortune = current_fortune; 
+			}
+			if( ! placeSJ.toString().equals("") )
+			{
+				String placeStr = placeSJ.toString();
+				podiumSJ.add(String.format("%dº lugar - %s ($ %d)",place,placeStr,previous_fortune));
+			}
+			JOptionPane.showMessageDialog(outputFrame,podiumSJ.toString(),"Fim de jogo", JOptionPane.INFORMATION_MESSAGE);
+		}
+	}
+
 	/**
 	 * @return number of players on the board currently. If a player
 	 * has gone bankrupt, it will be removed from the board, and,
@@ -575,6 +604,38 @@ public class Logic {
 		
 		OwnableCell cell = (OwnableCell) getCurrentPlayerSteppingCell();
 		cell.upgrade();
+	}
+	
+	/**
+	 * <p>Ends game even if there is still more than one player on the board
+	 * <p>Sums up all fortunes and list the players in a podium displayed on screen
+	 */
+	public void endGame() {
+		int initialPodiumSize = podium.size();
+		ArrayList<Player> auxPlayerList = new ArrayList<Player>(players);
+		while( !auxPlayerList.isEmpty() )
+		{
+			Player poorer = auxPlayerList.get(0);
+			int smallest_fortune = getPlayerFortuneSum(poorer);
+			for( Player player : auxPlayerList )
+			{
+				int fortune = getPlayerFortuneSum(poorer);
+				if( fortune < smallest_fortune )
+				{
+					poorer = player;
+					smallest_fortune = fortune;
+				}
+			}
+			podium.add(poorer);
+			auxPlayerList.remove(poorer);
+		}
+		showPodium();
+		int currentPodiumSize = podium.size();
+		while( currentPodiumSize > initialPodiumSize )
+		{
+			podium.remove( currentPodiumSize - 1 );
+			currentPodiumSize = podium.size();
+		}
 	}
 	
 	/**

@@ -42,16 +42,20 @@ public class MainPanel extends JPanel implements MouseListener {
 	private JButton propertyBtn = new JButton("Meu patrimônio");
 	private JButton saveBtn = new JButton("Salvar");
 	private JButton loadBtn = new JButton("Carregar");
+	private JButton endBtn = new JButton("Terminar");
 
+	JButton [] upperBtnGrid = {
+		saveBtn,
+		loadBtn,
+		endBtn,
+	};
 	
-	JButton [] btnGrid = {
+	JButton [] lowerBtnGrid = {
 			rollBtn ,
 			propertyBtn ,
 			upgradeBtn ,
 			buyBtn ,
 			endTurnBtn,
-			saveBtn,
-			loadBtn
 	};
 	
 	// graphical components
@@ -97,13 +101,25 @@ public class MainPanel extends JPanel implements MouseListener {
 		int h = 30;
 		int margin = 10;
 		int lower_y = 830;
-		for(int i = 0 ; i < btnGrid.length; i++) {
-			JButton btn = btnGrid[i];
+		int upper_y = 140;
+		
+		// lower buttons
+		for(int i = 0 ; i < lowerBtnGrid.length; i++) {
+			JButton btn = lowerBtnGrid[i];
 			btn.setBounds(bgimg_ret.width/2 - w/2, lower_y-(h+margin)*i, w, h);
 			btn.addMouseListener(this);
 			add(btn);
-			updateButtons();
 		}
+		
+		// upper buttons
+		for(int i = 0 ; i < upperBtnGrid.length; i++) {
+			JButton btn = upperBtnGrid[i];
+			btn.setBounds(bgimg_ret.width/2 - w/2, upper_y+(h+margin)*i, w, h);
+			btn.addMouseListener(this);
+			add(btn);
+		}
+		
+		updateButtons();
 	}
 	
 	/* **************
@@ -336,28 +352,45 @@ public class MainPanel extends JPanel implements MouseListener {
 			{
 				logic.upgrade();
 			}
-			else if( btnSource == saveBtn ) {
-				File saveFile = openStateFileDialog();
+			else if( btnSource == saveBtn )
+			{
+				File saveFile = openStateFileDialog(
+						"Salvar estado do jogo",
+						"Salvar",
+						"Salvar estado do jogo em arquivo" 
+				);
 				if( saveFile != null ) logic.saveStateToFile(saveFile);
 			}
-			else if( btnSource == loadBtn ) {
-				File saveFile = openStateFileDialog();
+			else if( btnSource == loadBtn )
+			{
+				File saveFile = openStateFileDialog(
+						"Carregar estado de jogo",
+						"Carregar",
+						"Carregar estado de jogo de arquivo"
+				);
 				if( saveFile != null ) {
 					logic.loadStateFromFile(saveFile);
 					repaint();
 				}
+			}
+			else if( btnSource == endBtn )
+			{
+				logic.endGame();
 			}
 			
 			updateButtons();
 		}
 	}
 	
-	private File openStateFileDialog() {
+	private File openStateFileDialog(String title, String approveLabel, String approveTip) {
 		JFileChooser chooser = new JFileChooser();
 		String ext = "gamestate";
 		FileNameExtensionFilter filter = new FileNameExtensionFilter(
         "Estado de Jogo (*."+ext+")", ext);
 	    chooser.setFileFilter(filter);
+	    chooser.setDialogTitle(title);
+	    chooser.setApproveButtonText(approveLabel);
+	    chooser.setApproveButtonToolTipText(approveTip);
 		chooser.showOpenDialog(this);
 		File f = chooser.getSelectedFile();
 		if( f != null )
