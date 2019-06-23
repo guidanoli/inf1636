@@ -151,6 +151,22 @@ public class Logic {
 	}
 		
 	/**
+	 * @param id - offset in pos and color arrays
+	 * @return current position in array (of those who are still on the board)
+	 */
+	public int getPlayerPinId(int id) {
+		Player p = players.get(id);
+		int offset = 0;
+		for( String color : playerColorNames )
+		{
+			if( p.getColorName().equals(color) )
+				return offset;
+			offset++;
+		}
+		return 0;
+	}
+	
+	/**
 	 * @return current player object
 	 */
 	public Player getCurrentPlayer() {
@@ -182,7 +198,7 @@ public class Logic {
 	 */
 	public int getPlayerFortuneSum(Player player) {
 		int sum = player.getBankAcc();
-		ArrayList<OwnableCell> cells = getCurrentPlayerCells();
+		ArrayList<OwnableCell> cells = getPlayerCells(player);
 		for( OwnableCell cell : cells ) sum += cell.getWorthValue();
 		return sum;
 	}
@@ -498,12 +514,11 @@ public class Logic {
 	/**
 	 * @return array of cells owned by current player
 	 */
-	public ArrayList<OwnableCell> getCurrentPlayerCells() {
+	public ArrayList<OwnableCell> getPlayerCells(Player player) {
 		ArrayList<OwnableCell> playerCells = new ArrayList<OwnableCell>();
-		Player player = getCurrentPlayer();
 		for(int i = 0 ; i < numOfCells; i++) {
 			AbstractCell cell = cells[i];
-			if( cell.isOwnable() ) {
+			if( cell instanceof OwnableCell ) {
 				OwnableCell ownableCell = (OwnableCell) cell;
 				if( player == ownableCell.getOwner() ) {
 					playerCells.add(ownableCell);
@@ -511,6 +526,11 @@ public class Logic {
 			}
 		}
 		return playerCells;
+	}
+	
+	public ArrayList<OwnableCell> getCurrentPlayerCells()
+	{
+		return getPlayerCells(getCurrentPlayer());
 	}
 	
 	private AbstractCell getCurrentPlayerSteppingCell() {
@@ -619,7 +639,7 @@ public class Logic {
 			int smallest_fortune = getPlayerFortuneSum(poorer);
 			for( Player player : auxPlayerList )
 			{
-				int fortune = getPlayerFortuneSum(poorer);
+				int fortune = getPlayerFortuneSum(player);
 				if( fortune < smallest_fortune )
 				{
 					poorer = player;
@@ -700,7 +720,7 @@ public class Logic {
 				JOptionPane.showMessageDialog( outputFrame,
 				String.format("O jogador %s está devendo $ %d ao banco. Preste suas contas com o banco, vendendo propriedades!",getCurrentPlayerColorName(),-player.getBankAcc()),
 				"Dívidas", JOptionPane.WARNING_MESSAGE);
-				PropertyDialog dlg = new PropertyDialog(getFrame());
+				PropertyDialog dlg = new PropertyDialog(getFrame(), false);
 				dlg.setVisible(true);
 			}
 			else
@@ -808,15 +828,22 @@ public class Logic {
 	public void saveStateToFile(File f) {
 		ArrayList<Player> cellsOwners = new ArrayList<Player>();
 		ArrayList<Integer> cellsLevels = new ArrayList<Integer>();
-		for( int i = 0; i < cells.length; i++) {
-			if( cells[i] instanceof OwnableCell ) {				
-				cellsOwners.add(((OwnableCell) cells[i]).getOwner());
-				cellsLevels.add(Integer.valueOf(((OwnableCell) cells[i]).getUpgradeLevel()));
+		for( AbstractCell cell : cells ) {
+			if( cell instanceof OwnableCell ) {	
+				OwnableCell ownableCell = (OwnableCell)cell;
+				cellsOwners.add(ownableCell.getOwner());
+				cellsLevels.add(Integer.valueOf(ownableCell.getUpgradeLevel()));
 			}
 		}
-		StateManager s = new StateManager(getNumPlayers(), this.turn, this.players,
-										  this.dice, this.deck, cellsOwners,
-										  cellsLevels);
+		StateManager s = new StateManager(
+				getNumPlayers(),
+				turn,
+				players,
+				dice,
+				deck,
+				cellsOwners,
+				cellsLevels
+		);
 		s.writeProperties(f);
 	}
 	
@@ -868,9 +895,9 @@ public class Logic {
 				if( cells[i] instanceof OwnableCell)
 				{
 					OwnableCell ownableCell = (OwnableCell) cells[i];
-					if( !sm.cellsOwners.get(auxIndex).equals("0") )
+					String cellOwnerColorName = sm.cellsOwners.get(auxIndex);
+					if( !cellOwnerColorName.equals("0") )
 					{
-						String cellOwnerColorName = sm.cellsOwners.get(auxIndex);
 						for( Player p : players )
 						{
 							if( p.getColorName().equals(cellOwnerColorName) )

@@ -42,13 +42,15 @@ public class PropertyDialog extends JDialog implements ActionListener {
 	/**
 	 * Constructs property dialog relative to parent
 	 * @param parent - parent frame
+	 * @param ignoreDebt - {@code true} if , even on debt,
+	 * the player can exit the dialog
 	 */
-	public PropertyDialog(Frame parent) {
+	public PropertyDialog(Frame parent, boolean ignoreDebt) {
 		super(parent,"Meu Patrimônio",true);
 		boolean onDebt = logic.getCurrentPlayer().isBroke();
 		buildDialog(onDebt);
 		updateState();
-		if( onDebt ) setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+		if( onDebt && !ignoreDebt ) setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		setLocationRelativeTo(parent);
 	}
 	

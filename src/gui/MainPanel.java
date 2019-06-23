@@ -186,9 +186,9 @@ public class MainPanel extends JPanel implements MouseListener {
 	private void paintPlayers(Graphics g) 
 	{
 		int pId = 0;
-		for( Integer pos : logic.getPlayersPos()) {
+		for( Integer pos : logic.getPlayersPos() ) {
 			Rectangle rect = getPlayerRect(pos, pId);
-			Image i = playersimg.get(pId);
+			Image i = playersimg.get(logic.getPlayerPinId(pId));
 			paintGameImage(g, i , rect);
 			pId++;
 		}
@@ -341,7 +341,7 @@ public class MainPanel extends JPanel implements MouseListener {
 			}
 			else if( btnSource == propertyBtn )
 			{
-				JDialog propertyDlg = new PropertyDialog(frame);
+				JDialog propertyDlg = new PropertyDialog(frame, true);
 				propertyDlg.setVisible(true);
 			}
 			else if( btnSource == buyBtn )
