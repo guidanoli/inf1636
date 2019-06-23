@@ -51,21 +51,21 @@ public class StateManager extends Properties {
 	@SuppressWarnings("static-access")
 	public StateManager(int numPlayers, int turn,
 						ArrayList<Player> players, Dice dice, Deque<ChanceCard> deck,
-						ArrayList<Player> cellsOwners1, ArrayList<Integer> cellsLevels1) {
+						ArrayList<Player> cellsOwnrs, ArrayList<Integer> cellsLvls) {
 		this.numPlayers = numPlayers;
 		this.turn = turn;
 		this.players = players;
 		this.dice = dice;
 		this.deck = deck;
-		for(int i = 0; i < cellsOwners1.size(); i ++ ) {
-			if( cellsOwners1.get(i) == null ) {
+		for(int i = 0; i < cellsOwnrs.size(); i ++ ) {
+			if( cellsOwnrs.get(i) == null ) {
 				this.cellsOwners.add("0");
 			} else {
-				this.cellsOwners.add(cellsOwners1.get(i).getColorName());
+				this.cellsOwners.add(cellsOwnrs.get(i).getColorName());
 			}
 		}
-		for(int i = 0; i < cellsLevels1.size(); i ++ ) {
-			this.cellsLevels.add(String.format("%d" , cellsLevels1.get(i)));
+		for(int i = 0; i < cellsLvls.size(); i ++ ) {
+			this.cellsLevels.add(String.format("%d" , cellsLvls.get(i)));
 		}
 	}
 	
@@ -107,8 +107,7 @@ public class StateManager extends Properties {
 
 	            // Save properties
 	            prop.store(output, null);
-
-	            System.out.println(prop);
+	            
 		 } catch (IOException io) {
 	            io.printStackTrace();
 		 }
@@ -116,7 +115,7 @@ public class StateManager extends Properties {
 	
 	public static StateManager loadProperties(File f) throws IOException {
 		StateManager sm = new StateManager();
-		FileReader reader=new FileReader(f.getAbsolutePath());
+		FileReader reader = new FileReader(f.getAbsolutePath());
 		Properties prop = new Properties();
 		prop.load(reader);
 		// logic values

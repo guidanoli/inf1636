@@ -363,9 +363,9 @@ public class MainPanel extends JPanel implements MouseListener {
 		if( f != null )
 		{
 			String filename = f.toString();
-			if (!filename .endsWith(ext))
+			if (!filename .endsWith("." + ext))
 			{
-		    	filename += ext;
+		    	filename += "." + ext;
 		    	f = new File(filename);
 			}
 		}

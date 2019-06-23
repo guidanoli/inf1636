@@ -6,7 +6,6 @@ import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -443,7 +442,13 @@ public class Logic {
 	}
 	
 	public void clickedOnCell(int pos) {
-		System.out.printf("You clicked on cell %d\n",pos);
+		if( frame == null ) return;
+		AbstractCell clickedCell = cells[pos];
+		if( ! (clickedCell instanceof OwnableCell) ) return;
+		OwnableCell ownableCell = (OwnableCell) clickedCell;
+		Image cellImg = ownableCell.getCardImage();
+		String cellName = ownableCell.getName();
+		new ImageDialog(frame, cellName, cellImg);
 	}
 	
 	/**
@@ -759,51 +764,71 @@ public class Logic {
 		StateManager sm;
 		try {
 			sm = StateManager.loadProperties(f);
-			this.setNumOfPlayers(sm.numPlayers);
-			this.turn = sm.turn;
-			this.players = sm.players;
+			setNumOfPlayers(sm.numPlayers);
+			turn = sm.turn;
+			players = sm.players;
 			
 			// loading deque state
 			int cardOwnerId = Integer.parseInt(sm.cardOwner);
 			ChanceCard escapeCard = null;
 			String escapeCardPath = "resources\\sprites\\sorteReves\\sorte03.jpg";
+			
+			// Take escape card from players 
 			for( Player player : players )
 			{
 				if( player.hasCard() )
 					escapeCard = player.takeCard();
 			}
+			
+			// If the escape card belongs to a player, give it to him
+			// If the card is in the deck, take from it first
 			if( cardOwnerId != -1 )
 			{
 				if( escapeCard == null )
-					while( (escapeCard=deck.pollFirst()).getImagePath() != escapeCardPath )
+				{
+					while( !(escapeCard=deck.pollFirst()).getImagePath().equals(escapeCardPath) )
+					{
 						deck.offerLast(escapeCard);
+					}
+				}
 				players.get(cardOwnerId).giveCard(escapeCard);
 			}
+			
+			// Make the top cards match
 			String topCardPath = sm.cardImgPath;
-			//TODO: comentei essa parte do código, pois estava prendendo a execução do programa, precisamos depurar o porquê?
 			while( !deck.peekFirst().getImagePath().equals(topCardPath) ) {
 				deck.offerLast(deck.pollFirst());
 			}
 			
 			// loading cells states
-			int indexLevels = 0;
-			int indexOwners = 0;
-			for( int i = 0; i < numOfCells; i++) {
-				if( cells[i] instanceof OwnableCell) {
-					if( !sm.cellsOwners.get(indexOwners).equals("0") ) {
-						int aux = 0;
-						while( !players.get(aux).getColorName().equals(sm.cellsOwners.get(indexOwners))) {
-							aux++;
+			int auxIndex = 0;
+			for( int i = 0; i < numOfCells; i++)
+			{
+				if( cells[i] instanceof OwnableCell)
+				{
+					OwnableCell ownableCell = (OwnableCell) cells[i];
+					if( !sm.cellsOwners.get(auxIndex).equals("0") )
+					{
+						String cellOwnerColorName = sm.cellsOwners.get(auxIndex);
+						for( Player p : players )
+						{
+							if( p.getColorName().equals(cellOwnerColorName) )
+							{
+								ownableCell.setOwner(p);
+								break;
+							}
 						}
-						((OwnableCell) cells[i]).setOwner(players.get(aux));
-						((Territory) cells[i]).setUpgradeLevel( Integer.parseInt(sm.cellsLevels.get(indexLevels)) );
+						if ( cells[i] instanceof Territory )
+						{
+							Territory territory = (Territory) ownableCell; 
+							int upgradeLevel = Integer.parseInt(sm.cellsLevels.get(auxIndex));
+							territory.setUpgradeLevel(upgradeLevel);
+						}
 					}
-					indexOwners++;
-					indexLevels++;
+					auxIndex++;
 				}
 			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}

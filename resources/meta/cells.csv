@@ -1,4 +1,4 @@
-Posição,Nome,Tipo,1º Argumento,2º Argumento,3º Argumento,4º Argumento,5º Argumento,6º Argumento,7º Argumento,8º Argumento,9º Argumento,10º Argumento
+﻿Posição,Nome,Tipo,1º Argumento,2º Argumento,3º Argumento,4º Argumento,5º Argumento,6º Argumento,7º Argumento,8º Argumento,9º Argumento,10º Argumento
 9,Bangu 1 (visitante),0,,,,,,,,,,
 18,Pagode e Cerveja,0,,,,,,,,,,
 0,Ponto de Partida,0,,,,,,,,,,
@@ -14,7 +14,7 @@ Posição,Nome,Tipo,1º Argumento,2º Argumento,3º Argumento,4º Argumento,5º 
 16,Barbante,4,barbante,2,220,150,18,90,250,700,875,1050
 14,Batan,4,batan,5,260,150,22,110,330,800,975,1150
 12,Botafogo,4,botafogo,1,300,200,26,130,390,900,1100,1275
-21,Caixa D’Água,4,caixaagua,3,140,100,10,50,150,450,625,750
+21,Caixa D'água,4,caixaagua,3,140,100,10,50,150,450,625,750
 30,Carobinha,4,carobinha,2,240,150,20,100,300,750,925,1100
 35,Cidade Alta,4,cidadealta,4,100,50,6,30,90,270,400,500
 1,Curicica,4,curicica,0,220,200,28,150,450,1000,1200,1400
