@@ -207,7 +207,7 @@ public class MainPanel extends JPanel implements MouseListener {
 	{
 		bgimg = imgList.getImg("tabuleiroRJ");
 		UpdateDice();
-		for( int pId = 0; pId < this.logic.getNumPlayers(); pId++ )
+		for( int pId = 0; pId < 6; pId++ )
 			playersimg.add(imgList.getImg(String.format("pin%d", pId)));
 	}
 	
