@@ -21,7 +21,7 @@ public class Player {
 	private int pos = 0;
 	private Color color;
 	private String colorName;
-	private int bankAcc = 2458;
+	private long bankAcc = 2458;
 	
 	/**
 	 * Constructs a player
@@ -90,7 +90,7 @@ public class Player {
 	 * @see #canAfford(int)
 	 * @see #isBroke()
 	 */
-	public int getBankAcc() {
+	public long getBankAcc() {
 		return bankAcc;
 	}
 	

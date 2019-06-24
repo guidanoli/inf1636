@@ -112,7 +112,7 @@ public class PropertyDialog extends JDialog implements ActionListener {
 	}
 
 	private void updateState() {
-		int balance = logic.getCurrentPlayer().getBankAcc();
+		long balance = logic.getCurrentPlayer().getBankAcc();
 		balanceLabel.setText(String.format("$ %d", balance));
 		if(balance < 0) balanceLabel.setForeground(Color.RED);
 		if(comboBox.getItemCount() == 0)

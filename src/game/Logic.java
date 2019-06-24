@@ -196,8 +196,8 @@ public class Logic {
 	 * @return fortune sum
 	 * @see OwnableCell#getWorthValue() getWorthValue()
 	 */
-	public int getPlayerFortuneSum(Player player) {
-		int sum = player.getBankAcc();
+	public long getPlayerFortuneSum(Player player) {
+		long sum = player.getBankAcc();
 		ArrayList<OwnableCell> cells = getPlayerCells(player);
 		for( OwnableCell cell : cells ) sum += cell.getWorthValue();
 		return sum;
@@ -273,11 +273,11 @@ public class Logic {
 			StringJoiner podiumSJ = new StringJoiner(nl);
 			StringJoiner placeSJ = new StringJoiner(comma);
 			int place = 1;
-			int previous_fortune = -1;
+			long previous_fortune = -1;
 			while(!podium.isEmpty())
 			{
 				Player p = podium.remove(podium.size()-1);
-				int current_fortune = getPlayerFortuneSum(p);
+				long current_fortune = getPlayerFortuneSum(p);
 				if( previous_fortune == -1 ) previous_fortune = current_fortune;
 				if( current_fortune != previous_fortune
 					|| previous_fortune <= 0 )
@@ -395,10 +395,10 @@ public class Logic {
 	}
 	
 	private void showCardToScreen() {
-		if( frame == null ) return;
+		if( getFrame() == null ) return;
 		ChanceCard card = deck.peekFirst();
 		Image cardImg = card.getCardImage();
-		new ImageDialog(frame, "Sorte ou Revés", cardImg);
+		new ImageDialog(getFrame(), "Sorte ou Revés", cardImg);
 	}
 	
 	/* *****
@@ -487,13 +487,13 @@ public class Logic {
 	}
 	
 	public void clickedOnCell(int pos) {
-		if( frame == null ) return;
+		if( getFrame() == null ) return;
 		AbstractCell clickedCell = cells[pos];
 		if( ! (clickedCell instanceof OwnableCell) ) return;
 		OwnableCell ownableCell = (OwnableCell) clickedCell;
 		Image cellImg = ownableCell.getCardImage();
 		String cellName = ownableCell.getName();
-		new ImageDialog(frame, cellName, cellImg);
+		new ImageDialog(getFrame(), cellName, cellImg);
 	}
 	
 	/**
@@ -556,16 +556,19 @@ public class Logic {
 		Player player = players.get(turn);
 		if( player.isInPrison() )
 		{
+			Frame outputFrame = getFrame();
 			if( dice.gotEqualSidesUp() )
 			{
 				player.setInPrison(false);
-				JOptionPane.showMessageDialog(	null, "Parabéns! Você conseguiu sair da prisão!",
+				if( outputFrame != null )
+				JOptionPane.showMessageDialog(	outputFrame, "Parabéns! Você conseguiu sair da prisão!",
 												"Prisão", JOptionPane.INFORMATION_MESSAGE);
 			}
 			else
 			{
 				player.updateRoundsInPrisonCounter();
-				JOptionPane.showMessageDialog(	null, "Não foi dessa vez... Tente na próxima rodada",
+				if( outputFrame != null )
+				JOptionPane.showMessageDialog(	outputFrame, "Não foi dessa vez... Tente na próxima rodada",
 												"Prisão", JOptionPane.INFORMATION_MESSAGE);
 			}
 		}
@@ -636,10 +639,10 @@ public class Logic {
 		while( !auxPlayerList.isEmpty() )
 		{
 			Player poorer = auxPlayerList.get(0);
-			int smallest_fortune = getPlayerFortuneSum(poorer);
+			long smallest_fortune = getPlayerFortuneSum(poorer);
 			for( Player player : auxPlayerList )
 			{
-				int fortune = getPlayerFortuneSum(player);
+				long fortune = getPlayerFortuneSum(player);
 				if( fortune < smallest_fortune )
 				{
 					poorer = player;
@@ -698,7 +701,7 @@ public class Logic {
 	private void checkDebt() {
 		Player player = getCurrentPlayer();
 		if( !player.isBroke() ) return; // isn't broke
-		int totalWorth = getPlayerFortuneSum(player);
+		long totalWorth = getPlayerFortuneSum(player);
 		Frame outputFrame = getFrame();
 		if( totalWorth < 0 )
 		{
@@ -730,6 +733,8 @@ public class Logic {
 				for( OwnableCell cell : cells )
 				{
 					if( !player.isBroke() ) break;
+					System.out.printf("Jogador %s vendeu %s por $ %d.\n",
+					player.getColorName(),cell.getName(),cell.getWorthValue());
 					cell.sell();
 				}
 			}
@@ -918,6 +923,7 @@ public class Logic {
 				}
 			}
 		} catch (Exception e) {
+			if( getFrame() != null )
 			JOptionPane.showMessageDialog(getFrame(), "O arquivo pode estar corrompido.", "Erro ao carregar arquivo", JOptionPane.ERROR_MESSAGE);
 			e.printStackTrace();
 		}
