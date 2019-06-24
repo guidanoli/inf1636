@@ -33,11 +33,6 @@ public class Player {
 		this.colorName = colorName;
 	}
 	
-	public Player(String colorName) {
-		this.color = Color.getColor(colorName);
-		this.colorName = colorName;
-	}
-
 	/**
 	 * @return position of player from the starting point
 	 * @see #setPos(int)
@@ -211,8 +206,12 @@ public class Player {
 		if( roundsInPrisonLeft > 0 ) roundsInPrisonLeft--;
 	}
 
-	public void setBankAcc(int i) {
-		bankAcc = i;		
+	/**
+	 * Sets bank account balance
+	 * @param newBalance - new balance value
+	 */
+	public void setBankAcc(int newBalance) {
+		bankAcc = newBalance;		
 	}
 	
 }
