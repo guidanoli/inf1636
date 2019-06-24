@@ -368,7 +368,7 @@ public class MainPanel extends JPanel implements MouseListener {
 						"Carregar",
 						"Carregar estado de jogo de arquivo"
 				);
-				if( saveFile != null ) {
+				if( saveFile != null && saveFile.exists() ) {
 					logic.loadStateFromFile(saveFile);
 					repaint();
 				}

@@ -832,7 +832,8 @@ public class Logic {
 			if( cell instanceof OwnableCell ) {	
 				OwnableCell ownableCell = (OwnableCell)cell;
 				cellsOwners.add(ownableCell.getOwner());
-				cellsLevels.add(Integer.valueOf(ownableCell.getUpgradeLevel()));
+				Integer lvl = Integer.valueOf(ownableCell.getUpgradeLevel());
+				cellsLevels.add(lvl);
 			}
 		}
 		StateManager s = new StateManager(
@@ -917,6 +918,7 @@ public class Logic {
 				}
 			}
 		} catch (Exception e) {
+			JOptionPane.showMessageDialog(getFrame(), "O arquivo pode estar corrompido.", "Erro ao carregar arquivo", JOptionPane.ERROR_MESSAGE);
 			e.printStackTrace();
 		}
 	}

@@ -57,15 +57,19 @@ public class StateManager extends Properties {
 		this.players = players;
 		this.dice = dice;
 		this.deck = deck;
-		for(int i = 0; i < cellsOwnrs.size(); i ++ ) {
-			if( cellsOwnrs.get(i) == null ) {
+		for( Player cellOwner : cellsOwnrs ) {
+			if( cellOwner == null ) {
 				this.cellsOwners.add("0");
 			} else {
-				this.cellsOwners.add(cellsOwnrs.get(i).getColorName());
+				this.cellsOwners.add(cellOwner.getColorName());
 			}
 		}
-		for(int i = 0; i < cellsLvls.size(); i ++ ) {
-			this.cellsLevels.add(String.format("%d" , cellsLvls.get(i)));
+		for( Integer cellLevel : cellsLvls ) {
+			if( cellLevel == null ) {
+				this.cellsLevels.add("0");
+			} else {
+				this.cellsLevels.add(cellLevel.toString());
+			}
 		}
 	}
 	
@@ -102,7 +106,7 @@ public class StateManager extends Properties {
 	            	}
 	            }
 	            for( int i = 0; i < cellsLevels.size(); i++ ) {
-		            prop.setProperty(String.format("ownablecell.%d.upgradelevel", i), cellsLevels.get(i).toString());
+		            prop.setProperty(String.format("ownablecell.%d.upgradelevel", i), cellsLevels.get(i));
 	            }
 
 	            // Save properties
@@ -113,7 +117,7 @@ public class StateManager extends Properties {
 		 }
 	}
 	
-	public static StateManager loadProperties(File f) throws IOException {
+	public static StateManager loadProperties(File f) throws Exception {
 		StateManager sm = new StateManager();
 		FileReader reader = new FileReader(f.getAbsolutePath());
 		Properties prop = new Properties();
@@ -143,11 +147,22 @@ public class StateManager extends Properties {
 	    cellsOwners = new ArrayList<String>();
 	    cellsLevels = new ArrayList<String>();
         for (int i = 0; i < numOfCells; i++) {
-        	cellsOwners.add( prop.getProperty(String.format("ownablecell.%d.owner", i)));
-        	cellsLevels.add( prop.getProperty(String.format("ownablecell.%d.upgradelevel", i)));
+        	String ownerStr = prop.getProperty(String.format("ownablecell.%d.owner", i));
+        	if( ownerStr == null ) {
+        		cellsOwners.add("0");
+        	} else {
+        		cellsOwners.add(ownerStr);
+        	}
+        	String levelStr = prop.getProperty(String.format("ownablecell.%d.upgradelevel", i));
+        	if( levelStr == null )
+        	{
+        		cellsLevels.add("0");
+        	} else {
+	        	cellsLevels.add(levelStr);
+        	}
 		}
                     
-           // dice values
+        // dice values
         sm.lastRoll = new int[2];
         sm.lastRoll[0] = Integer.parseInt(prop.getProperty("dice.sideup.0"));
         sm.lastRoll[1] = Integer.parseInt(prop.getProperty("dice.sideup.1"));       
